@@ -1,0 +1,3 @@
+# App on the VPS, database on hosted Supabase
+
+The Nuxt app deploys to Justin's own VPS; the database, auth and Realtime stay on the hosted Supabase project (`ohbrawtgcyngyhaqtddy`). Self-hosting the whole stack was genuinely available — GitHub OAuth is documented self-hosted via `GOTRUE_EXTERNAL_GITHUB_*` with callback `https://<domain>/auth/v1/callback`, behind Caddy for TLS and WebSocket upgrades — and was rejected to keep Postgres, backups and auth off the box we administer. Consequence: the app is only as private as supabase.com, and every environment needs its Site URL and Additional Redirect URLs configured.

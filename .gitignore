@@ -18,6 +18,9 @@ logs
 .fleet
 .idea
 
+# Agent working files (issue bodies, wiring scripts)
+.scratch
+
 # Local env files
 .env
 .env.*
