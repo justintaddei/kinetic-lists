@@ -3,28 +3,33 @@
  * PROTOTYPE ONLY — wayfinder ticket "Prototype Store Tag authoring: the capture
  * form and the Tag offer at Buy" (#13). Throwaway route, delete with the branch.
  *
- * Plan: three structurally different takes on Store Tag authoring (capture form
- * + the Tag act at Buy), switchable via `?variant=`, on fake Household data.
+ * Round 2, on the mobile frame Justin picked in round 1 (bottom tab bar +
+ * drill-down + bottom sheet + FAB capture + chip input + modal confirm sheet),
+ * built on shadcn-vue. Round 1's desktop shapes are in git history
+ * (`proto(store-tag): round 1 …`); the settled answers ride every variant:
+ * no Tag prompt at Buy, gate copy at capture + a count in the Basket, both
+ * name-join paths, Location authoring, a bare Store is legal everywhere.
  *
- *   A — Capture sheet: item-first; Store Tags as capture checkboxes; Tag offer is
- *       one prompt row per untagged Item, after the Purchase.
- *   B — Fast capture: capture carries no Store at all; tags live on a per-Item
- *       drawer; one bulk Tag prompt naming every untagged Item after Buy.
- *   C — Store-first: the Active Store frames the screen; the capture composer
- *       inherits it as a pre-applied tag; untagged Items show as a count.
+ *   D — Store-home: the Kinetic View is the front tab, the capture sheet
+ *       pre-ticks the Store you are standing at, Tags are removable chips on
+ *       the Kinetic and Basket rows.
+ *   E — List-home: the List is the drill-down with a Store filter chip row;
+ *       rows stay clean and Tags live only on the Item sheet.
+ *   F — Store-owns-Tags: the header picks the Active Store with a Select, the
+ *       Kinetic rows are read-only, Tags are authored on the Store's own screen.
  *
  * No DB, no geocoder, no Realtime, no seams committed (#14/#4 own the seams, #3
  * owns the tables). In-memory state only.
  */
 const route = useRoute();
 const variants = [
-  { key: "A", name: "Capture sheet" },
-  { key: "B", name: "Fast capture + bulk Tag" },
-  { key: "C", name: "Store-first" },
+  { key: "D", name: "Store-home" },
+  { key: "E", name: "List-home" },
+  { key: "F", name: "Store-owns-Tags" },
 ];
 const current = computed(() => {
-  const v = String(route.query.variant ?? "A").toUpperCase();
-  return variants.some((x) => x.key === v) ? v : "A";
+  const v = String(route.query.variant ?? "D").toUpperCase();
+  return variants.some((x) => x.key === v) ? v : "D";
 });
 
 useSeoMeta({
@@ -41,9 +46,9 @@ useSeoMeta({
       <NuxtLink to="/">back</NuxtLink>
     </p>
 
-    <PrototypeVariantCaptureSheet v-if="current === 'A'" />
-    <PrototypeVariantFastCapture v-if="current === 'B'" />
-    <PrototypeVariantStoreFirst v-if="current === 'C'" />
+    <PrototypeVariantMobileKinetic v-if="current === 'D'" />
+    <PrototypeVariantMobileLists v-if="current === 'E'" />
+    <PrototypeVariantMobileStore v-if="current === 'F'" />
 
     <PrototypeStatePanel />
     <PrototypeSwitcher :variants="variants" :current="current" />
