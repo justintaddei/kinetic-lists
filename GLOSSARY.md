@@ -7,16 +7,24 @@ Shopping lists that know where you are: items are tagged with the stores they're
 ### Household
 
 **Household**:
-The unit that owns everything the app records, created at sign-up and grown by Inviting other Members. A user belongs to exactly one Household.
+The unit that owns everything the app records, created at sign-up and grown by **Join**. A user belongs to exactly one Household. It has a name — "My Household" until a Member renames it.
 _Avoid_: Family, home, circle, group, team, account
 
 **Member**:
-A person in a Household, with full powers over everything it owns — including removing other Members. Members are equal; there is no role hierarchy.
+A User as a Household sees them: their Membership in it, carrying a **Display Name**. Full powers over everything the Household owns; Members are equal, there is no role hierarchy. In v1 a Household only grows by Join — no Member removes another, leaves, dissolves a Household, or deletes one.
 _Avoid_: Owner, admin, collaborator, editor, user
 
-**Invite**:
-An email offer to join a Household, accepted by the signed-in user it was sent to. Joining requires an empty Household, so an Invite reaches a person who has not started yet.
-_Avoid_: Join code, share link, membership request
+**Invitation**:
+A Household's token offering **Join**, minted and revoked by any Member and shown as a link to paste to a person. It binds no address and no identity: whoever presents it while signed in Joins. It expires after 7 days and is consumed by the first Join.
+_Avoid_: Invite, email invite, join code, share link, membership request
+
+**Join**:
+The act of presenting an Invitation and becoming a Member of its Household. It admits only a user whose own Household is empty, and vacates that Household.
+_Avoid_: Redeem, accept, claim, enrol, sign up
+
+**Display Name**:
+A Member's name as their Household sees them, seeded from their sign-in provider — real name, then username, then the email local-part. Only the Member it belongs to may change it.
+_Avoid_: Nickname, full name, username, handle, profile name
 
 ### Lists, Items and Status
 
