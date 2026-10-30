@@ -9,8 +9,20 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
   supabase: {
-    redirect: false,
-    // Set to true after running `supabase gen types typescript --project-id <ref> > app/types/database.types.ts`
-    types: false,
+    // Global middleware sends signed-out visitors to `login` for the routes in `include`
+    redirect: true,
+    redirectOptions: {
+      login: "/login",
+      // OAuth/email callback target — the module forces `ssr: false` here so the
+      // PKCE code is exchanged in the browser, where the cookies can be written
+      callback: "/confirm",
+      // Only guard the app area; landing + auth pages stay public.
+      // `/app` is listed separately because the `**` pattern needs a slash.
+      include: ["/app", "/app/**"],
+      // Remember the attempted URL so `/confirm` can send users back to it
+      saveRedirectToCookie: true,
+    },
+    // Path (not a boolean) to the generated row types — regenerate with `pnpm db:types`
+    types: "~/types/database.types.ts",
   },
 });
