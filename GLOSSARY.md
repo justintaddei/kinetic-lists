@@ -75,7 +75,7 @@ A Household's List Items that are In Basket, across all its Lists — a view ove
 _Avoid_: Cart, trolley, trip
 
 **Buy**:
-The act of buying the Basket at the Active Store: it records a Purchase with one Purchase Line per List Item and marks them Stocked.
+The act of buying the Basket at the Active Store: it records a Purchase with one Purchase Line per List Item and marks them Stocked. It prompts for nothing — no Tag offer, no confirmation.
 _Avoid_: Clear Basket, checkout, complete, finish, settle
 
 **Purchase**:
@@ -97,12 +97,12 @@ A Store's place in the world — coordinates and a Geofence. Created where a Mem
 _Avoid_: Outlet, branch, site, pin, geotag, coordinates
 
 **Store Tag**:
-A link marking that an Item can be bought at a Store. An Item may carry many, and may carry none.
+A link marking that an Item can be bought at a Store. An Item may carry many, and may carry none; a captured Item may arrive carrying them.
 _Avoid_: Location tag, label, keyword
 
 **Tag**:
-The act of adding the Store a Buy happened at to a bought Item's Store Tags, offered when the tag is missing and never replacing the tags the Item has.
-_Avoid_: Retag, reassign, auto-tag
+The act of linking an Item to a Store it is bought at — written at capture (Store chips, the Store you are standing at pre-ticked), on the Item's screen, and on the Store's screen, and never replacing the tags the Item has. **Buy offers nothing**: after a Buy the app may report the bought Items with no Tag for that Store, and a report writes nothing.
+_Avoid_: Retag, reassign, auto-tag, Tag offer, Tag prompt
 
 **Category**:
 A Household's free-text value on an Item, used to order a List. A value, not a record: v1 has no rename and no merge.
@@ -123,19 +123,19 @@ The state of a Position falling within a Location's Geofence.
 _Avoid_: Nearby, at, arrived (use as verbs, not states)
 
 **Arrival**:
-A recorded moment a Member was Inside a Location, with the Member, the Location and the time — and no Position, and no copy of the Geofence that judged it. An Arrival only ever suggests Picking that Location's Store.
-_Avoid_: Visit, geofence event, check-in
+A recorded moment a Member was Inside a Location, with the Member, the Location and the time — and no Position, and no copy of the Geofence that judged it. An Arrival **selects that Location's Store as the Active Store** and **moves no List Item**: nothing is Picked, no Status changes (ADR-0015).
+_Avoid_: Visit, geofence event, check-in, Arrival banner, "Pick it"
 
 **Geofence**:
 The radius around a Location's coordinates within which a Member counts as Inside it. Default 150 m, editable per Location by any Member — one shared judgement, not one per Member.
 _Avoid_: Radius, fence, area
 
 **Active Store**:
-The Store the Kinetic View and the Basket are showing. Set by Picking, never automatic; a Store with no Location has no Geofence to suggest it.
+The Store the Kinetic View and the Basket are showing. An **Arrival** selects it by default; a Member overrides that by **Picking**, and their Pick stands until the next Arrival. When no Location matches a Position, the app offers a new Store from where the Member stands, so there is never no Active Store. A Store with no Location has no Geofence and can never be selected by an Arrival.
 _Avoid_: Current location, selected store
 
 **Pick**:
-The hand-set act of choosing the Active Store. An Arrival only suggests a Pick.
+The act of making a Store the Active Store — by hand from the header, against an Arrival's default. It moves no List Item.
 _Avoid_: Select, choose, switch, detect
 
 **Kinetic View**:
