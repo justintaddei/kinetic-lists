@@ -145,3 +145,13 @@ _Avoid_: Select, choose, switch, detect
 **Kinetic View**:
 The Household's cross-List view of the List Items Needed at the Active Store, the app's reason for existing.
 _Avoid_: Location view, store view, nearby view
+
+## UI Vocabulary
+
+**Drawer**:
+The mobile bottom sheet, where v1's form and confirmation surfaces live — Capture, the cascade confirm, the Active Store picker. shadcn-vue's `drawer`, built on reka-ui's `Drawer` primitive (not vaul-vue), `swipe-direction="down"`. Named **Drawer** so it never collides with Supabase's Sheet below. A Drawer carries a labelled Close control, and Escape dismisses it only when it is `modal` — which is why tests dismiss it by clicking (ADR-0020).
+_Avoid_: Sheet, bottom sheet, modal, dialog, vaul
+
+**Owned set**:
+The shadcn-vue components copied into `app/components/ui/**` — app-owned code with registry-stable names, added with `pnpm dlx shadcn-vue@latest add <name>`, edited as we need. A screen uses them through Nuxt auto-import (`<UiButton>`, `<UiToaster>`) with no import lines (ADR-0020).
+_Avoid_: component library, dependency, registry package, design system
