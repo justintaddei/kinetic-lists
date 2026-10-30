@@ -33,7 +33,7 @@ A named collection of Items owned by a Household. Every Member sees and edits ev
 _Avoid_: Board, cart, pantry
 
 **Item**:
-A Household's catalogue record naming a thing it buys, carrying a Category, a Quantity, and its Store Tags. Created by capture; one Item per name within a Household.
+A Household's catalogue record naming a thing it buys, carrying a Category, a Quantity, and its Store Tags. Created by capture; one Item per name within a Household, names matched case- and whitespace-insensitively. Renamable (the new name takes the same collision rule), and deletable: deleting it takes its live List Items, its Store Tags and its history.
 _Avoid_: Product, SKU, entry, row
 
 **Catalogue**:
@@ -79,22 +79,26 @@ The act of buying the whole Basket at the Active Store: it records a Purchase wi
 _Avoid_: Clear Basket, checkout, complete, finish, settle, partial Buy, tick-lines
 
 **Purchase**:
-An append-only record of a Basket bought at a Store, claimed once per Basket visit: the Member who bought it, the Store, the Location where one was known, and the time. Visible to every Member; surfaced to none of them in v1. A Buy that found nothing to claim records no Purchase.
+An append-only record of a Basket bought at a Store, claimed once per Basket visit: the Member who bought it, the Store, the Location where one was known, and the time. Visible to every Member; surfaced to none of them in v1. A Buy that found nothing to claim records no Purchase, a Purchase never stands with no Purchase Lines, and a Purchase is erased when its Store is deleted. History is disposable: nothing in v1 reads it.
 _Avoid_: Order, transaction, receipt, basket event
 
 **Purchase Line**:
-One List Item as a Buy claimed it — its name, Quantity, Store, and Location where one was known, at that moment, surviving renames, moves and deletions. Only the first Buy to claim a List Item writes that Item's Line.
-_Avoid_: Receipt line, basket line, order line
+One List Item as a Buy claimed it, recorded **by reference** — the Item and the Store, read at whatever names those rows carry today. It copies no text, and it dies with the Item it names. Only the first Buy to claim a List Item writes that Item's Line.
+_Avoid_: Receipt line, basket line, order line, snapshot (v1 snapshots nothing)
 
 ### Stores and Tags
 
 **Store**:
-A Household's name for where it shops — the thing a **Store Tag** points at and the Kinetic View is about. It is not a place: its **Locations** are the places Members travel to, and a Store may have many, or none.
+A Household's name for where it shops — the thing a **Store Tag** points at and the Kinetic View is about. It is not a place: its **Locations** are the places Members travel to, and a Store may have many, or none. Its name is unique within the Household, case- and whitespace-insensitively; it is renamable, and deleting it takes its Locations, Tags, Arrivals and Purchases.
 _Avoid_: Location, chain, brand, group, location group, basket, shop, venue, address, place
 
+**Bare Store**:
+A Store with no **Locations** — legal, Taggable, Pickable, Buys legal, and selectable by no Arrival, because it has a Geofence to be nothing inside of. Its Purchases name the Store and no Location.
+_Avoid_: Empty store, unlocated store, placeholder store
+
 **Location**:
-A Store's place in the world — coordinates and a Geofence. Created where a Member is standing only when she asks for it (the app never mints a Location silently), typed in by hand for a place not visited, and deduped by Store name: capturing an existing name adds a Location to it rather than minting a second Store.
-_Avoid_: Outlet, branch, site, pin, geotag, coordinates
+A Store's place in the world — coordinates and a Geofence. Created where a Member is standing only when she asks for it (the app never mints a Location silently), typed in by hand for a place not visited, and deduped by Store name: capturing an existing name adds a Location to it rather than minting a second Store. Coordinates are editable in place; a deleted Location erases the Arrivals at it and the Purchases that named it, and two Locations are never merged.
+_Avoid_: Outlet, branch, site, pin, geotag, coordinates (a Location has no name in v1)
 
 **Store Tag**:
 A link marking that an Item can be bought at a Store. An Item may carry many, and may carry none; a captured Item may arrive carrying them.
@@ -109,7 +113,7 @@ A Household's free-text value on an Item, used to order a List. A value, not a r
 _Avoid_: Aisle, section, group, tag
 
 **Quantity**:
-An Item's free-text default of how it is bought ("2 L", "a dozen"), copied into each Purchase Line.
+An Item's free-text default of how it is bought ("2 L", "a dozen"). A value on the Item; a Purchase Line reads it from the Item and copies nothing.
 _Avoid_: Amount, count, unit (a unit is part of the value, never a record)
 
 ### Being there
@@ -123,7 +127,7 @@ The state of a Position falling within a Location's Geofence.
 _Avoid_: Nearby, at, arrived (use as verbs, not states)
 
 **Arrival**:
-A recorded moment a Member was Inside a Location, with the Member, the Location and the time — and no Position, and no copy of the Geofence that judged it. An Arrival **selects that Location's Store as the Active Store** and **moves no List Item**: nothing is Picked, no Status changes (ADR-0015).
+A recorded moment a Member was Inside a Location, with the Member, the Location and the time — and no Position, and no copy of the Geofence that judged it. An Arrival **selects that Location's Store as the Active Store** and **moves no List Item**: nothing is Picked, no Status changes (ADR-0015). It is erased when its Location is deleted.
 _Avoid_: Visit, geofence event, check-in, Arrival banner, "Pick it"
 
 **Geofence**:
@@ -131,7 +135,7 @@ The radius around a Location's coordinates within which a Member counts as Insid
 _Avoid_: Radius, fence, area
 
 **Active Store**:
-The Store the Kinetic View and the Basket are showing. An **Arrival** selects it by default; a Member overrides that by **Picking**, and their Pick stands until the next Arrival. When no Location matches a Position, the app offers a new Store from where the Member stands. A Household that owns no Store has **no Active Store** — the empty state its first Buy resolves by naming the shop. A Store with no Location has no Geofence and can never be selected by an Arrival.
+The Store the Kinetic View and the Basket are showing. An **Arrival** selects it by default; a Member overrides that by **Picking**, and their Pick stands until the next Arrival. When no Location matches a Position, the app offers a new Store from where the Member stands. A Household that owns no Store has **no Active Store** — the empty state its first Buy resolves by naming the shop, and the same state a Member lands in after deleting the Store they were standing at (ADR-0017: no re-Pick rule). A Store with no Location has no Geofence and can never be selected by an Arrival.
 _Avoid_: Current location, selected store
 
 **Pick**:

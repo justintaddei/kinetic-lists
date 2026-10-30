@@ -1,6 +1,8 @@
 # Households own everything, and a user belongs to exactly one
 
 > **Amended by [ADR-0014](0014-household-membership-is-granted-by-an-invitation-token.md):** the Household, the one-per-user rule and equal Members stand; **joining is a token Invitation, not a Supabase email invite**, and v1 builds admission only. "Any Member may invite, remove and rename" is now invite and rename; "the last Member out deletes it with its data" is not built, and a Household's name is its own text ("My Household" at first), not a name for the user.
+>
+> **Amended by [ADR-0017](0017-purchase-lines-reference-rows-and-every-delete-cascades.md):** the Household's rows are **deletable**, and a delete cascades through everything hanging off it — Members included, since FK cascade is not checked by RLS. "Destructive acts are paid for with confirmations" now has teeth: the Store/Item/Location delete sheets count what the cascade erases.
 
 Sharing used to be defined per List (`list_owners`) and per user (Items, ADR-0002); per-user Stores left a shared List showing two Walmarts that never merge. v1 replaces that with a **Household**: Lists, Items, Stores, Purchases and Arrivals belong to a Household, each user is a **Member** of exactly one, created at sign-up and named for them. This supersedes ADR-0002 and ADR-0003 — Items are per-Household, deduped by name within it, and **Owner** leaves the vocabulary with its powers untouched: Members are equal, there are no tiers, and destructive acts are paid for with confirmations that name the other Members.
 
