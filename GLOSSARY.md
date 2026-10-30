@@ -7,7 +7,7 @@ Shopping lists that know where you are: items are tagged with the stores they're
 ### Household
 
 **Household**:
-The unit that owns everything the app records, created at sign-up and grown by **Join**. A user belongs to exactly one Household. It has a name — "My Household" until a Member renames it.
+The unit that owns everything the app records, created at sign-up and grown by **Join**. A user belongs to exactly one Household. It has a name — "My Household" until a Member renames it — and it exists exactly as long as it has a Member: a Household no longer has one, it is gone, and v1 names no act that empties one.
 _Avoid_: Family, home, circle, group, team, account
 
 **Member**:

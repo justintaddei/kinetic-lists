@@ -1,6 +1,8 @@
 # Household membership is granted by an Invitation token
 
 > **Amends [ADR-0009](0009-households-own-everything.md):** the Household, its one-per-user rule and its equal Members stand. How people get into a Household is now decided: not a Supabase email invite, and no removal, leaving or dissolution in v1.
+>
+> **Amended by [ADR-0019](0019-a-sign-up-seeds-its-household-by-trigger.md):** the **Display Name** seed is a sign-up trigger's job, not the app's; "the auto-created Household is permanent" is now **a Household is gone when its last Membership is**, enforced by an `after delete` trigger. "No Member ... dissolves a Household, or deletes one" stands — v1 names no such act.
 
 [ADR-0009](0009-households-own-everything.md) fixed what a Household is and left how it gets people open, with Supabase's native invite as the working assumption. v1 grants membership with an app-level **Invitation**: a token row a Member mints (`private.create_invitation(household_id)`), shown as a link to paste to a person, presented by a signed-in user and exchanged for membership by **Join** — `private.join_household(token)`, a `security definer` function. We chose this because Supabase's invite is a secret-key endpoint whose hosted mailer "sends only to the email addresses of your organization's team members" at two emails per hour, so the native flow buys email delivery, a confirmation round-trip and an `invited_at` session in order to answer the one question v1 answers by handing someone a link; it also keeps the token, the expiry and the revocation ours, and keeps e2e sign-in honest (ADR-0008's local email tests touch no mailbox).
 
