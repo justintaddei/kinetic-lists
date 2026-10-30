@@ -71,18 +71,22 @@ The act of buying the Basket at the Active Store: it records a Purchase with one
 _Avoid_: Clear Basket, checkout, complete, finish, settle
 
 **Purchase**:
-An append-only record of a Basket bought at a Store: the Member who bought it, the Store, and the time. Visible to every Member.
+An append-only record of a Basket bought at a Store: the Member who bought it, the Store, the Location it was bought at, and the time. Visible to every Member.
 _Avoid_: Order, transaction, receipt, basket event
 
 **Purchase Line**:
-One List Item as a Buy recorded it — its name, Quantity and Store at that moment, surviving renames and deletions.
+One List Item as a Buy recorded it — its name, Quantity, Store and Location at that moment, surviving renames, moves and deletions.
 _Avoid_: Receipt line, basket line, order line
 
 ### Stores and Tags
 
 **Store**:
-A Household's place things are bought at, with coordinates and a Geofence. A thing Members travel *to*.
-_Avoid_: Location, shop, venue, address, place
+A Household's name for where it shops — the thing a **Store Tag** points at and the Kinetic View is about. It is not a place: its **Locations** are the places Members travel to, and a Store may have many, or none.
+_Avoid_: Location, chain, brand, group, location group, basket, shop, venue, address, place
+
+**Location**:
+A Store's place in the world — coordinates and a Geofence. Created where a Member is standing (a Position, at Buy or at capture), typed in by hand for a place not visited, and deduped by Store name: capturing an existing name adds a Location to it rather than minting a second Store.
+_Avoid_: Outlet, branch, site, pin, geotag, coordinates
 
 **Store Tag**:
 A link marking that an Item can be bought at a Store. An Item may carry many, and may carry none.
@@ -103,23 +107,23 @@ _Avoid_: Amount, count, unit (a unit is part of the value, never a record)
 ### Being there
 
 **Position**:
-A device-reported coordinate, read in the browser and never persisted.
-_Avoid_: Location, coordinates, GPS, geolocation (reserve "geolocation" for the act of reading a Position)
+A device-reported coordinate, read in the browser and never persisted — and the only source of a Location's coordinates in v1.
+_Avoid_: Location, coordinates, GPS, geolocation (reserve "geolocation" for the act of reading a Position). A **Location** is a Store's place in the world; a Position is a device's report of where you are.
 
 **Inside**:
-The state of a Position falling within a Store's Geofence.
+The state of a Position falling within a Location's Geofence.
 _Avoid_: Nearby, at, arrived (use as verbs, not states)
 
 **Arrival**:
-A recorded moment a Member was Inside a Store, with the Member, the Store and the time — and no Position, and no copy of the Geofence that judged it.
+A recorded moment a Member was Inside a Location, with the Member, the Location and the time — and no Position, and no copy of the Geofence that judged it. An Arrival only ever suggests Picking that Location's Store.
 _Avoid_: Visit, geofence event, check-in
 
 **Geofence**:
-The radius around a Store's coordinates within which a Member counts as Inside it. Default 150 m, editable per Store by any Member.
+The radius around a Location's coordinates within which a Member counts as Inside it. Default 150 m, editable per Location by any Member — one shared judgement, not one per Member.
 _Avoid_: Radius, fence, area
 
 **Active Store**:
-The Store the Kinetic View and the Basket are showing. Set by Picking, never automatic.
+The Store the Kinetic View and the Basket are showing. Set by Picking, never automatic; a Store with no Location has no Geofence to suggest it.
 _Avoid_: Current location, selected store
 
 **Pick**:
