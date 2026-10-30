@@ -1,0 +1,5 @@
+# A List Item has one Status: Needed, In Basket, Stocked — and there are no basket tables
+
+Binary checked/unchecked could not say what ADR-0001 promises: that an Item survives a shop. "Unchecked" is a silence where "bought at Walmart on the 12th" is a fact. A List Item carries one **Status**, shared by every Member of its Household — **Needed**, **In Basket**, **Stocked** — moved by three acts: **Check** (Needed → In Basket), **Buy** (In Basket → Stocked at the Active Store, writing the Purchase and its Purchase Lines per ADR-0004), and **Need** (Stocked → Needed). The Basket is the projection of the In Basket List Items, so v1 has no `baskets`/`basket_lines` tables, and Buy is one Member's act on the whole Basket at the Picked Store.
+
+Consequences: a Check is a Household fact, so buying milk for lunch clears it from a co-Member's basket — accepted in ADR-0009's language (a household does not hide groceries); "checked out" is banned vocabulary, since Checkout is **Clear Basket**'s avoid-word, and "Clear Basket" retires as the name of the act, replaced by **Buy**.
