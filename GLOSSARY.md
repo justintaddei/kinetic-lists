@@ -180,6 +180,14 @@ _Avoid_: idempotency key, request id, nonce
 The rule a cascade enforces after the fact, so an invariant never stands violated: a Household with no Member, a Purchase with no Line. The cascade arrives with nothing to announce it, and nobody to announce it to.
 _Avoid_: cascade, cleanup trigger, orphan delete
 
+**Ownership keys**:
+The columns naming whose row a row is — `household_id`, and the parent key beside it. A **policy** may let a Member edit everything around them; the keys themselves **never move**, because an `UPDATE` policy that permits a rename does not understand a key, and pair keys carry Tenancy Check as an index. A trigger on `before update of` the keys is what stops a row walking to another owner.
+_Avoid_: reparent, re-home a row, move a row, ownership transfer
+
+**Grant posture**:
+The stance the database takes toward the two browser roles, set once at the baseline: `anon` reaches the three **Definer set** calls and nothing else, the default privileges that hand `select` and `execute` to every new table are revoked, and the read the rosters need is granted per object. Tenancy is the RLS that runs inside the grants, never a wider grant. Postgres has no role to hand the reading to; Supabase's defaults do the handing, so the posture is stated out loud.
+_Avoid_: public schema access, default grants, broad read
+
 ## UI Vocabulary
 
 **Drawer**:

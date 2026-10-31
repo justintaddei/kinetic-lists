@@ -6,7 +6,7 @@ How schema work in this repo passes its gates. [ADR-0023](../adr/0023-the-v1-sch
 
 - `supabase db lint` runs **`plpgsql_check` over function bodies only**. It does not see tables, policies, grants, views, triggers or indexes. It is a plpgsql linter, nothing more.
 - `supabase db advisors` prints the Supabase **advisor** findings — the security and performance rules [the advisory registry](https://supabase.com/docs/guides/database/advisors) names (`0001`…`0030`), the same registry Supabase Studio's **Advisor rules** page shows against the hosted project, since [2026-06](https://supabase.com/changelog.md/2026-06-22-advisor-api) on `plpgsql_check` findings too.
-- Both gates need a shadow database, so both run in CI on a local stack ([#6](https://github.com/justintaddei/kinetic-lists/issues/6)), and nothing about them can be checked by a `git commit` alone.
+- Both gates need a shadow database, so both run in CI on a local stack ([#4](https://github.com/justintaddei/kinetic-lists/issues/4)), and nothing about them can be checked by a `git commit` alone.
 
 ## Our register
 
@@ -15,12 +15,16 @@ What each rule means for this schema, so a future ticket reads a verdict instead
 | Code | Finding | Verdict here |
 | --- | --- | --- |
 | `0001` | Unindexed foreign key | Satisfied. Every cascading key has its referencing-side index — the list [ADR-0017](../adr/0017-purchase-lines-reference-rows-and-every-delete-cascades.md) asked for, plus the composite pair keys [ADR-0023](../adr/0023-the-v1-schema-is-ten-household-owned-tables-under-pair-keys-with-three-granted-definer-rpcs-as-its-whole-privileged-surface.md) invented. |
+| `0002` | `auth_users_exposed` | N/A in the blueprint. No view reads `auth.users`, and neither roster touches it; the crossing is `private.handle_new_user`, an `after insert on auth.users` trigger granted to `supabase_auth_admin` ([ADR-0019](../adr/0019-a-sign-up-seeds-its-household-by-trigger.md)) — a trigger function is not the API's. Re-check if any future view reads `auth.users`. |
 | `0003` | RLS policy not expression-wrapped | Satisfied. Every policy that reads `auth.uid()` does it as `("select auth"."uid"())`, so it is an initplan evaluated once. Tenancy goes one step further: `private.is_member` hides the `auth` read in a function body. |
+| `0004` | `no_primary_key` | Satisfied. Ten tables, ten primary keys; `item_store_tags` is keyed by its pair `(item_id, store_id)`, and every child carries the `unique (household_id, "id")` the pair keys point at. |
+| `0005` | `unused_index` | A runtime finding, not a blueprint one. The composite pair keys are FK targets (used by definition); re-read the count and Status indexes after Arrivals and Buys are living traffic. |
 | `0006`/`0007` | `multiple_permissive_policies`, `policy_exists_rls_disabled` | 0006 watched: each verb on each table is exactly one permissive policy, so no verb composes two policies, and the pair keys do the rest. 0007 cannot fire: every `public` table has `enable row level security`. |
 | `0008` | `rls_enabled_no_policy` | The register's own instruction, taken literally: an intentional denial is written as a rejection policy. `purchases` and `purchase_lines` carry `for all ... using (false) with check (false)`; `list_items` carries no `DELETE` policy and says so in a comment (the Un-Need fog, [ADR-0022](../adr/0022-hygiene-verbs-live-on-the-entity-s-own-surface-and-a-cascade-confirmation-names-only-what-the-household-can-see.md)). |
 | `0009` | Duplicate index | Accepted. `unique (household_id, "id")` beside `primary key (id)` is not a duplicate — the composite is the target of the pair foreign keys — and a pair unique like `(list_id, item_id)` beside a `(household_id, "id")` is two facts, not one. |
 | `0010` | `security_definer_view` | Satisfied. `roster_stores` and `roster_items` are `with (security_invoker = on)`: the querying Member's own policies run inside the view, so a roster adds no read the Member does not already have. |
 | `0011` | `function_search_path_mutable` | Satisfied. Every definer function sets `set search_path = ''` and its body names every relation fully qualified, `"public"."…"`, `"auth"."uid"()`, `"private"."…"`. |
+| `0012` | `auth_allow_anonymous_sign_ins` | A hosted Auth setting, not a schema fact — set in Studio → Authentication. Anonymous sign-ins stay **off**: every Household is seeded by the sign-up trigger, so an anonymous session would seed a Household nobody can reach ([ADR-0019](../adr/0019-a-sign-up-seeds-its-household-by-trigger.md)). |
 | `0013` | `rls_disabled_in_public` | Satisfied. Ten base tables, all in `public`, all with `enable row level security`; `private` holds functions only. |
 | `0014` | `extension_in_public` | Satisfied. `uuid-ossp` and `pg_cron` are installed in `extensions`, never in `public`. |
 | `0015` | `rls_references_user_metadata` | Satisfied. No policy reads a JWT's metadata; tenancy crosses `private.is_member`. The sign-up trigger reads `raw_user_meta_data` for a Display Name ([ADR-0019](../adr/0019-a-sign-up-seeds-its-household-by-trigger.md)), and a trigger function is not a policy - the rule reads policies. |
@@ -44,8 +48,8 @@ What each rule means for this schema, so a future ticket reads a verdict instead
 
 Suppressions live in the hosted project, not in this repo: the CLI has no in-repo expression for an advisory suppression, so they are applied per object on the hosted project's **Advisor rules** page (Supabase Studio → **Database → Advisor rules**), and re-checked after every `db push`. They are out-of-band state on hosted, so:
 
-- Suppressions are **not** reapplied by `db reset` (that is a local-stack operation — it is *how* #6's CI builds a shadow database, and it touches no hosted project from a checkout. The hosted database is never reset from a checkout; it moves by migration.)
-- #6's CI gate is: `db lint` clean, `supabase db advisors` reviewed against this register, and `db schema declarative sync --dry-run` producing the expected migration.
+- Suppressions are **not** reapplied by `db reset` (that is a local-stack operation — it is *how* #4's CI builds a shadow database, and it touches no hosted project from a checkout. The hosted database is never reset from a checkout; it moves by migration.)
+- #4's CI gate is: `db lint` clean, `supabase db advisors` reviewed against this register, and `db schema declarative sync --dry-run` producing the expected migration.
 - A new `security definer` function reaching `anon`/`authenticated` is a decision, and joins this list by being written here first, in the same PR that adds it.
 
 ## The declarative schema and the demo table's retirement
@@ -61,7 +65,7 @@ Suppressions live in the hosted project, not in this repo: the CLI has no in-rep
   1. `supabase db reset --experimental` (drop + re-apply history — clears `supabase_migrations.schema_migrations` and the `lists` table);
 3. apply the grant posture once, so the snapshot baseline records the v1 grant state, not Supabase's default one;
 4. `supabase db pull` with an empty `supabase/migrations/` to take the snapshot baseline;
-  3. the declarative files land as one generated migration (#6's sync).
+  3. the declarative files land as one generated migration (#4's sync).
 
 ## Grant posture, and the steps no declarative file can express
 
