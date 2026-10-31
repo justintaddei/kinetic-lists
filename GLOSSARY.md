@@ -33,12 +33,12 @@ A named collection of Items owned by a Household. Every Member sees and edits ev
 _Avoid_: Board, cart, pantry
 
 **Item**:
-A Household's catalogue record naming a thing it buys, carrying a Category, a Quantity, and its Store Tags. Created by capture; one Item per name within a Household, names matched case- and whitespace-insensitively. Renamable (the new name takes the same collision rule), and deletable: deleting it takes its live List Items, its Store Tags and its history.
+A Household's catalogue record naming a thing it buys, carrying a Category, a Quantity, and its Store Tags. Created by capture; one Item per name within a Household, names matched case- and whitespace-insensitively. Renamable, and a rename onto a name the Household already uses is **refused** — no merge, no adoption; the duplicate is deleted, from the Item roster. Deletable: deleting it takes its live List Items, its Store Tags and its history.
 _Avoid_: Product, SKU, entry, row
 
 **Catalogue**:
-The Items a Household has captured. Grows by capture, never by browsing.
-_Avoid_: Inventory, stock, pantry
+The Items a Household has captured. Grows by capture, never by browsing. It is a Member's shopping hygiene list: the Household tab's Item roster is the only place every Item can be found, renamed and deleted.
+_Avoid_: Inventory, stock, pantry, catalogue screen
 
 **List Item**:
 An Item as it appears in a specific List — the thing a Member Checks and Buys, and the unit history is measured in.
@@ -89,7 +89,7 @@ _Avoid_: Receipt line, basket line, order line, snapshot (v1 snapshots nothing)
 ### Stores and Tags
 
 **Store**:
-A Household's name for where it shops — the thing a **Store Tag** points at and the Kinetic View is about. It is not a place: its **Locations** are the places Members travel to, and a Store may have many, or none. Its name is unique within the Household, case- and whitespace-insensitively; it is renamable, and deleting it takes its Locations, Tags, Arrivals and Purchases.
+A Household's name for where it shops — the thing a **Store Tag** points at and the Kinetic View is about. It is not a place: its **Locations** are the places Members travel to, and a Store may have many, or none. Its name is unique within the Household, case- and whitespace-insensitively; renamed on its **Store screen**, where a taken name opens the name-join sheet, and deleting it takes its Locations, Tags, Arrivals and Purchases.
 _Avoid_: Location, chain, brand, group, location group, basket, shop, venue, address, place
 
 **Bare Store**:
@@ -97,15 +97,15 @@ A Store with no **Locations** — legal, Taggable, Pickable, Buys legal, and sel
 _Avoid_: Empty store, unlocated store, placeholder store
 
 **Location**:
-A Store's place in the world — coordinates and a Geofence. Created where a Member is standing only when she asks for it (the app never mints a Location silently), typed in by hand for a place not visited, and deduped by Store name: capturing an existing name adds a Location to it rather than minting a second Store. Coordinates are editable in place; a deleted Location erases the Arrivals at it and the Purchases that named it, and two Locations are never merged.
-_Avoid_: Outlet, branch, site, pin, geotag, coordinates (a Location has no name in v1)
+A Store's place in the world — coordinates and a Geofence. Created where a Member is standing only when she asks for it (the app never mints a Location silently), typed in by hand for a place not visited, and deduped by Store name: capturing an existing name adds a Location to it rather than minting a second Store. It is edited on its Store's screen, in a row reading `42.2562, -71.7799 · 150 m` — coordinates and Geofence changed there, deletion confirmed there — and a deleted Location erases the Arrivals at it and the Purchases that named it. Two Locations are never merged.
+_Avoid_: Outlet, branch, site, pin, geotag, coordinates (a Location has no name in v1), Location sheet
 
 **Store Tag**:
 A link marking that an Item can be bought at a Store. An Item may carry many, and may carry none; a captured Item may arrive carrying them.
 _Avoid_: Location tag, label, keyword
 
 **Mint**:
-The act of creating a **Store** from a name a Member types, giving it a **Location** when a **Position** is in hand. The header's "+ Store from where I am", Buy's "name this shop", a **Bare Store**'s ask to add the place it is standing at, and capture's "+ Add a store from where I am now" are all the one sheet. The app never mints silently.
+The act of creating a **Store** from a name a Member types, giving it a **Location** when a **Position** is in hand. The header's "+ Store from where I am", Buy's "name this shop", a **Bare Store**'s ask to add the place it is standing at, capture's "+ Add a store from where I am now", and a Store screen's "+ Add a Location from where I am" (the Store's name fixed) are all the one sheet — **Position-first, and nameless except on the Store screen's rename door**, where the name field appears and a taken name opens the name-join sheet. The app never mints silently.
 _Avoid_: Create store, add store, new store, drop a pin, seed, geocode
 
 **Tag**:
@@ -161,8 +161,24 @@ The mobile bottom sheet, where v1's form and confirmation surfaces live — Capt
 _Avoid_: Sheet, bottom sheet, modal, dialog, vaul
 
 **Store picker**:
-The **Drawer** that changes the **Active Store**. It lists **Stores** and nothing else — the Active Store pinned and ticked at the top, the rest alphabetical, each row the Store name and its Location count — with a filter field once the Household has six Stores, and the **Mint** entry "+ Store from where I am" fixed outside the scrolling rows. A Household with no Store opens the Mint sheet instead of a picker (ADR-0021).
+The **Drawer** that changes the **Active Store**. It lists **Stores** and nothing else — the Active Store pinned and ticked at the top, the rest alphabetical, each row the Store name and its Location count — with a filter field once the Household has six Stores, and the **Mint** entry "+ Store from where I am" fixed outside the scrolling rows. A Household with no Store opens the Mint sheet instead of a picker (ADR-0021). It is Picking only: no Delete, no Rename, no Tags live in it.
 _Avoid_: Store list, Store dropdown, Store select, Location picker, drill-in
+
+**Store screen**:
+The screen describing one **Store** — its name (edited through the **Mint** sheet's rename door), its Store Tags, and its **Locations**, listed inline as coordinate rows and edited there. Opened from the Kinetic View's header and from the Store roster; it carries **Delete Store**. It is hygiene, not the Kinetic View.
+_Avoid_: Store detail, store admin, store settings, Store sheet
+
+**Item sheet**:
+The sheet describing one **Item**: Rename, Category, Quantity, its Store Tags, the Lists it stands in, and **Delete Item**. Opened from a List, the Kinetic View, the Basket and the Item roster.
+_Avoid_: Item detail, item card, item admin, drill-down
+
+**Household roster**:
+The Household tab's two lists — **Stores** (`Walmart · 2 Locations`) and **Items** (`Milk · 3 Lists · Walmart, Big Y`) — the doors to the **Store screen** and the **Item sheet**. A row is one tap target, no gesture and no row button; a filter field appears at six rows. v1's only hygiene navigation.
+_Avoid_: hygiene screen, admin list, store list, catalogue screen, index
+
+**Cascade confirmation**:
+The v1 confirmation for an erasure — exactly three exist: **Delete Store**, **Delete Location**, **Delete Item**. Each names, in counts, only what the Household can lose in the app (Locations, Item Tags, the Needed rows that vanish, for every Member); it names no Purchase, Purchase Line, Arrival, **Active Store** or **Standing Location**, and gates on nothing (ADR-0022).
+_Avoid_: warning, destructive dialog, are-you-sure, confirm modal
 
 **Owned set**:
 The shadcn-vue components copied into `app/components/ui/**` — app-owned code with registry-stable names, added with `pnpm dlx shadcn-vue@latest add <name>`, edited as we need. A screen uses them through Nuxt auto-import (`<UiButton>`, `<UiToaster>`) with no import lines (ADR-0020).
