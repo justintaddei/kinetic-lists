@@ -104,6 +104,10 @@ _Avoid_: Outlet, branch, site, pin, geotag, coordinates (a Location has no name 
 A link marking that an Item can be bought at a Store. An Item may carry many, and may carry none; a captured Item may arrive carrying them.
 _Avoid_: Location tag, label, keyword
 
+**Mint**:
+The act of creating a **Store** from a name a Member types, giving it a **Location** when a **Position** is in hand. The header's "+ Store from where I am", Buy's "name this shop", a **Bare Store**'s ask to add the place it is standing at, and capture's "+ Add a store from where I am now" are all the one sheet. The app never mints silently.
+_Avoid_: Create store, add store, new store, drop a pin, seed, geocode
+
 **Tag**:
 The act of linking an Item to a Store it is bought at — written at capture (Store chips, the Store you are standing at pre-ticked), on the Item's screen, and on the Store's screen, and never replacing the tags the Item has. **Buy offers nothing**: after a Buy the app may report the bought Items with no Tag for that Store, and a report writes nothing.
 _Avoid_: Retag, reassign, auto-tag, Tag offer, Tag prompt
@@ -127,19 +131,23 @@ The state of a Position falling within a Location's Geofence.
 _Avoid_: Nearby, at, arrived (use as verbs, not states)
 
 **Arrival**:
-A recorded moment a Member was Inside a Location, with the Member, the Location and the time — and no Position, and no copy of the Geofence that judged it. An Arrival **selects that Location's Store as the Active Store** and **moves no List Item**: nothing is Picked, no Status changes (ADR-0015). It is erased when its Location is deleted.
+A recorded moment a Member was Inside a Location, with the Member, the Location and the time — and no Position, and no copy of the Geofence that judged it. An Arrival **selects that Location's Store as the Active Store**, **names its Location as the Member's Standing Location**, and **moves no List Item**: nothing is Picked, no Status changes (ADR-0015, ADR-0021). It is erased when its Location is deleted.
 _Avoid_: Visit, geofence event, check-in, Arrival banner, "Pick it"
+
+**Standing Location**:
+The Location of a Member's most recent **Arrival**, held on their device for the visit. It names the **Location** a **Buy** records; a hand **Pick** clears it, and a Buy with no Standing Location records none. It carries no name of its own, and v1 shows it nowhere.
+_Avoid_: Current location, my location, where I am, geotag, last location, Active Location (only an Arrival names it)
 
 **Geofence**:
 The radius around a Location's coordinates within which a Member counts as Inside it. Default 150 m, editable per Location by any Member — one shared judgement, not one per Member.
 _Avoid_: Radius, fence, area
 
 **Active Store**:
-The Store the Kinetic View and the Basket are showing. An **Arrival** selects it by default; a Member overrides that by **Picking**, and their Pick stands until the next Arrival. When no Location matches a Position, the app offers a new Store from where the Member stands. A Household that owns no Store has **no Active Store** — the empty state its first Buy resolves by naming the shop, and the same state a Member lands in after deleting the Store they were standing at (ADR-0017: no re-Pick rule). A Store with no Location has no Geofence and can never be selected by an Arrival.
+The Store the Kinetic View and the Basket are showing. An **Arrival** selects it by default and names its **Standing Location**; a Member overrides that by **Picking**, and their Pick stands until the next Arrival — on the device they Picked on (ADR-0021). When no Location matches a Position, the app offers a new Store from where the Member stands. A Household that owns no Store has **no Active Store** — the empty state its first Buy resolves by naming the shop, and the same state a Member lands in after deleting the Store they were standing at (ADR-0017: no re-Pick rule). A Store with no Location has no Geofence and can never be selected by an Arrival.
 _Avoid_: Current location, selected store
 
 **Pick**:
-The act of making a Store the Active Store — by hand from the header, against an Arrival's default. It moves no List Item.
+The act of making a Store the Active Store — by hand from the header, against an Arrival's default. It moves no List Item, and clears the Standing Location: picking a Store by name is not standing at its Location.
 _Avoid_: Select, choose, switch, detect
 
 **Kinetic View**:
@@ -151,6 +159,10 @@ _Avoid_: Location view, store view, nearby view
 **Drawer**:
 The mobile bottom sheet, where v1's form and confirmation surfaces live — Capture, the cascade confirm, the Active Store picker. shadcn-vue's `drawer`, built on reka-ui's `Drawer` primitive (not vaul-vue), `swipe-direction="down"`. Named **Drawer** so it never collides with Supabase's Sheet below. A Drawer carries a labelled Close control, and Escape dismisses it only when it is `modal` — which is why tests dismiss it by clicking (ADR-0020).
 _Avoid_: Sheet, bottom sheet, modal, dialog, vaul
+
+**Store picker**:
+The **Drawer** that changes the **Active Store**. It lists **Stores** and nothing else — the Active Store pinned and ticked at the top, the rest alphabetical, each row the Store name and its Location count — with a filter field once the Household has six Stores, and the **Mint** entry "+ Store from where I am" fixed outside the scrolling rows. A Household with no Store opens the Mint sheet instead of a picker (ADR-0021).
+_Avoid_: Store list, Store dropdown, Store select, Location picker, drill-in
 
 **Owned set**:
 The shadcn-vue components copied into `app/components/ui/**` — app-owned code with registry-stable names, added with `pnpm dlx shadcn-vue@latest add <name>`, edited as we need. A screen uses them through Nuxt auto-import (`<UiButton>`, `<UiToaster>`) with no import lines (ADR-0020).
