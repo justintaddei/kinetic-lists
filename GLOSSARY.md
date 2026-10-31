@@ -154,6 +154,32 @@ _Avoid_: Select, choose, switch, detect
 The Household's cross-List view of the List Items Needed at the Active Store, the app's reason for existing.
 _Avoid_: Location view, store view, nearby view
 
+### The schema's own shapes
+
+**Pair key**:
+A row's tenancy and its owner expressed as one fact: a **composite foreign key into a composite unique key**, so a Location of no Store, a Line naming a Row of another Household, or a Purchase naming a Store the Household does not own **cannot exist**. Only a Store Tag needs a guard of its own — its pair crosses two tables no key connects.
+_Avoid_: composite key (alone), pair constraint, cross-table check
+
+**Definer set**:
+The granted functions a phone can call — **Buy**, **Join**, **Preview** — plus the ungranted helpers and erasers beside them. Tenancy is one of the ungranted ones: a definer reads Memberships so no policy has to read the table it guards. The set is closed: a fourth grant is a schema decision, not an implementation detail.
+_Avoid_: RPC, privileged function, definer function (say which one)
+
+**Kinetic View read**:
+The **Kinetic View** as the schema serves it: the Rows of one Household in one **Status**, narrowed by the Tags the **Active Store** carries. It is a read, not a view — the schema has two views, and this is not one of them.
+_Avoid_: Kinetic View query, needed index, view
+
+**Roster view**:
+The Household tab's two surfaces as a single read: a Store with its Location and Tag counts, an Item with its List count and the names of the Stores tagged on it. They run the querying Member's own policies inside them, so a roster is not a door.
+_Avoid_: view, roster query, join
+
+**Session token**:
+One **Buy** attempt's claim, unique per Household. A phone names a token once per Basket visit; a replayed token returns the recorded **Purchase** and writes nothing. The server's clock owns every timestamp a Buy touches.
+_Avoid_: idempotency key, request id, nonce
+
+**Erase trigger**:
+The rule a cascade enforces after the fact, so an invariant never stands violated: a Household with no Member, a Purchase with no Line. The cascade arrives with nothing to announce it, and nobody to announce it to.
+_Avoid_: cascade, cleanup trigger, orphan delete
+
 ## UI Vocabulary
 
 **Drawer**:
