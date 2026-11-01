@@ -1,0 +1,18 @@
+-- #10 — the demo `public.lists` table is retired by the v1 baseline.
+--
+-- It predates ADR-0009 (households own everything): `lists` has no `household_id`, no roster view
+-- reading it, and no producer. Since ADR-0019 a sign-up seeds its household's own list through the
+-- `private.handle_new_user` trigger, on the `lists` table that `supabase/schemas/03_lists.sql`
+-- declares. Nothing in `app/` or `server/` queries the demo table — the three screens that touch
+-- Supabase (`index.vue`, `login.vue`, `confirm.vue`) do auth only — so this drop erases a table
+-- with no reader, no dependents, and no purchase line naming it.
+--
+-- Declared here, in a migration, because the retirement is a fact about the destination that no
+-- future declarative file will state: the steady-state tree is a snapshot of the hosted database
+-- (`db pull --declarative --linked`), so once the table is gone nothing declares it. Writing the
+-- `drop` into the declarative tree of a project that already dropped the table means the next
+-- `db pull` prunes the file and the drop disappears from history.
+--
+-- The version sorts after `20261030005109` (applied on hosted), so `db push --linked` takes it in
+-- order. Nothing cascades from `lists`: it has no dependents, and no purchase line references it.
+drop table if exists "public"."lists";
