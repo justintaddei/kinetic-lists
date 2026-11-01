@@ -46,6 +46,22 @@
 -- included), the six seed files delete in that commit, and every later change is a
 -- declarative diff. ADOPT-5 names the drift check: run `sync` against the snapshot and
 -- expect an empty plan - any statement this file got wrong shows up there.
+--
+-- WHAT THE PUSH TAUGHT THE TREE TO WRITE (measured on hosted; every rule below is a
+-- Postgres answer to a statement this file has carried):
+--   * `db query --linked` splits on `;` and does not understand a dollar-quoted body, so
+--     a function body with semicolons cannot be submitted there. plpgsql is validated by
+--     the push, which reports `At statement: N`.
+--   * `row_count` is a keyword, not an identifier: the printer writes
+--     `get diagnostics "v" = "row_count"` and Postgres answers `unrecognized GET
+--     DIAGNOSTICS item`, so the item is written bare.
+--   * A keyword form is not a function call and cannot be qualified: 1-arg trim is
+--     written `btrim(x)`; `extract(epoch from x)` needs search_path = 'pg_catalog',
+--     which is why no function sets search_path = ''.
+--   * `(select auth.uid())` prints as ("select auth"."uid"()) and Postgres reads that as
+--     an unterminated quoted identifier; the tree writes (select "auth"."uid"()) - six
+--     sites.
+--   * String literals survive the printer: an empty string is written E''.
 
 -- ---- 01_tenancy.sql ----
 -- Tenancy: the Household, its Members, its Invitations.
@@ -1039,7 +1055,7 @@ begin
     select "v_purchase_id", "v_household", "c"."item_id", "p_store_id", "c"."id"
     from "claimed" "c";
 
-    get diagnostics "v_claimed" = "row_count";
+    get diagnostics "v_claimed" = row_count;
 
     if "v_claimed" = 0 then
       -- ADR-0017: a Purchase is recorded with at least one Line, so this raises

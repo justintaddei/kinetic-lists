@@ -95,7 +95,7 @@ begin
     select "v_purchase_id", "v_household", "c"."item_id", "p_store_id", "c"."id"
     from "claimed" "c";
 
-    get diagnostics "v_claimed" = "row_count";
+    get diagnostics "v_claimed" = row_count;
 
     if "v_claimed" = 0 then
       -- ADR-0017: a Purchase is recorded with at least one Line, so this raises
