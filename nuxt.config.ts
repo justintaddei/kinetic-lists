@@ -26,8 +26,8 @@ export default defineNuxtConfig({
           content: "width=device-width, initial-scale=1, viewport-fit=cover",
         },
         // Phone chrome follows the system theme, matching the --background token.
-        { name: "theme-color", media: "(prefers-color-scheme: light)", content: "#fafafa" },
-        { name: "theme-color", media: "(prefers-color-scheme: dark)", content: "#0a0a0a" },
+        { name: "theme-color", media: "(prefers-color-scheme: light)", content: "#ffffff" },
+        { name: "theme-color", media: "(prefers-color-scheme: dark)", content: "#111111" },
       ],
     },
   },

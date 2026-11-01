@@ -1,0 +1,23 @@
+# Arrival Web Platform Facts
+
+## Geolocation
+
+- The web Geolocation API reports positions; it does not define geofence enter/exit events. The W3C Geofencing API is a 2017 Working Group Note and is no longer maintained. [Geolocation](https://www.w3.org/TR/geolocation/) · [Geofencing](https://www.w3.org/TR/geofencing/)
+- Geolocation requires a secure context. The Geolocation specification says position requests are handled when the document is visible; hidden-document watch updates are dropped and resume when it becomes visible. This is not background tracking. [W3C Geolocation](https://www.w3.org/TR/geolocation/#request-a-position)
+- `watchPosition()` reports implementation-defined significant changes; user agents may rate-limit. `clearWatch()` stops a watch. The API does not prescribe an application session lifecycle. [W3C watch algorithm](https://www.w3.org/TR/geolocation/#watchposition-method)
+- `enableHighAccuracy` is a hint and may increase power use or response time; no battery estimate is specified. `maximumAge` controls reuse of cached positions. `timeout` limits position acquisition, not watch duration or time waiting for visibility. [W3C PositionOptions](https://www.w3.org/TR/geolocation/#position_options_interface)
+- `coords.accuracy` is an estimated radius in meters at 95% confidence, not a guarantee of the true position. The API does not define the app's boundary tolerance, hysteresis, or dwell behavior. [W3C coordinates](https://www.w3.org/TR/geolocation/#latitude-longitude-and-accuracy-attributes)
+- The Permissions API requests permission only from the `prompt` state; a `denied` state is not re-prompted by JavaScript. User-agent controls determine how a user changes that state. `PERMISSION_DENIED` can also mean the context is not secure. [W3C Permissions](https://www.w3.org/TR/permissions/#requesting-more-permission) · [W3C Geolocation errors](https://www.w3.org/TR/geolocation/#position_error_interface)
+
+## iOS and Installability
+
+- Installing a web app to the iOS Home Screen does not grant native Core Location's `Always` authorization. Apple's `Always` authorization is part of the native Core Location API; it should not be inferred from a PWA's standalone display mode. [Apple authorization](https://developer.apple.com/documentation/corelocation/requesting-authorization-to-use-location-services) · [WebKit Home Screen web apps](https://webkit.org/blog/13878/web-push-for-web-apps-on-ios-and-ipados/)
+- WebKit documents that an iOS Home Screen web app can use manifest `standalone` or `fullscreen` display. For iOS/iPadOS, `apple-touch-icon` takes precedence over manifest icons; manifest icons are supported from iOS/iPadOS 15.4. [WebKit Home Screen web apps](https://webkit.org/blog/13878/web-push-for-web-apps-on-ios-and-ipados/) · [WebKit Safari 15.4](https://webkit.org/blog/12445/new-webkit-features-in-safari-15-4/)
+- The Web Application Manifest defines `name`, `short_name`, `start_url`, `scope`, `icons`, `display`, `orientation`, `theme_color` and related fields. The published specification is a Working Draft; browser support can differ, and `orientation` is a preference rather than a guarantee. [W3C Web Application Manifest](https://www.w3.org/TR/appmanifest/) · [MDN orientation compatibility](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Manifest/Reference/orientation)
+- Vite PWA's Nuxt integration exposes manifest configuration. Its minimal-requirements guide recommends 192x192 and 512x512 icons and shows Apple touch-icon metadata; these are integration guidance, not universal W3C size requirements. [Vite PWA Nuxt integration](https://vite-pwa-org.netlify.app/frameworks/nuxt.html) · [Vite PWA minimal requirements](https://vite-pwa-org.netlify.app/guide/pwa-minimal-requirements)
+
+## Scope Notes
+
+- Comparing a current Position against locally held Household Locations is an application decision; one pass is O(n), and the web standards set no Location-count limit. This repo's Arrival amendments scope the comparison to Locations, not Stores.
+- No battery-cost figures or cross-version iOS prompt guarantees are established by these sources. Browser wording and permission controls are user-agent and OS-version dependent.
+- These facts support the decisions on [Arrival: geolocation lifecycle, geofence compare, installable manifest](https://github.com/justintaddei/kinetic-lists/issues/6); they do not choose product behavior.
