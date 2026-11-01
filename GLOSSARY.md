@@ -255,3 +255,15 @@ _Avoid_: search box, type-ahead, sort control, filter chips, facets
 **Mint sheet**:
 The one sheet that creates a **Store** (with a door for the **Store picker**'s sticky entry, Buy's "name this shop", a **Bare Store**'s ask, and capture's `+ Add a store from where I am now`): its rename door carries the name field, and the sheet mints a Store and its first **Location** from one **Position** — coordinates read once, never stored, never shown (ADR-0013, ADR-0016, ADR-0021, ADR-0024).
 _Avoid_: add store, create store, location sheet, store form, map picker
+
+**Household stream**:
+The one Realtime channel a signed-in tab joins — topic **`household:{householdId}`**, the eight live tables, filtered `household_id=eq.` — mounted by the **shell**, read-only in v1, carrying no broadcast, no presence and no device state. The tables' own `select` policies are its door; the topic names the Household, it does not guard it (ADR-0025).
+_Avoid_: socket, websocket, live list, per-List channel, sync channel, real-time layer
+
+**Write's report**:
+The copy v1 gives for a write that failed, and ADR-0016's report of a Buy that claimed nothing (naming the co-Member and their Store, drawn from that Member's own reply) — the app's **only** announcement, mounted **top-center**. Co-Members receive no announcement of any kind (ADR-0022, ADR-0025; the strings are [#32](https://github.com/justintaddei/kinetic-lists/issues/32)).
+_Avoid_: co-Member toast, claim toast, notification, sync banner, offline indicator, toast stack
+
+**Online act**:
+v1's promise that every affordance — **Check**, **Buy**, add, edit, **Tag**, **Pick** — is one live call whose failure is its own report. No queue, no replay, no merge rules, no offline affordance, no connection language (ADR-0025).
+_Avoid_: offline mode, queued edit, pending write, sync UI, reconnecting, draft
