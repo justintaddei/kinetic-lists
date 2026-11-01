@@ -34,7 +34,7 @@ CREATE POLICY "household_members_rename_self" ON "public"."household_members"
 
 REVOKE ALL ON TABLE "public"."household_members" FROM "authenticated";
 
-GRANT MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE ON TABLE "public"."household_members" TO "authenticated";
+GRANT MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE ON TABLE "public"."household_members" TO "authenticated";
 
 REVOKE ALL ON TABLE "public"."household_members" FROM "postgres";
 

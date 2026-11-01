@@ -16,7 +16,7 @@ begin
     raise exception 'Joining needs a signed-in user' using errcode = '28000';
   end if;
 
-  select "i"."household_id", "i"."expires_at", "i"."accepted_at", "h"."name"
+  select "i"."household_id", "i"."expires_at", "i"."joined_at", "h"."name"
     into "v_invite"
   from "public"."household_invites" "i"
   join "public"."households" "h" on "h"."id" = "i"."household_id"
@@ -26,7 +26,7 @@ begin
     raise exception 'This invitation does not exist';
   end if;
 
-  if "v_invite"."accepted_at" is not null then
+  if "v_invite"."joined_at" is not null then
     raise exception 'This invitation has already been used';
   end if;
 
@@ -59,8 +59,8 @@ begin
   values ("v_invite"."household_id", "v_user", "v_display_name");
 
   update "public"."household_invites"
-     set "accepted_by" = "v_user",
-         "accepted_at" = "now"()
+     set "joined_by" = "v_user",
+         "joined_at" = "now"()
    where "token" = "p_token";
 
   return jsonb_build_object(

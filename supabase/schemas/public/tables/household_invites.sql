@@ -4,10 +4,10 @@ CREATE TABLE "public"."household_invites" (
   "created_by"   uuid                     NOT NULL,
   "created_at"   timestamp with time zone NOT NULL DEFAULT now(),
   "expires_at"   timestamp with time zone NOT NULL DEFAULT (now() + '7 days'::interval),
-  "accepted_by"  uuid,
-  "accepted_at"  timestamp with time zone,
-  CONSTRAINT "household_invites_accepted_by_fkey" FOREIGN KEY (accepted_by) REFERENCES auth.users(id) ON DELETE CASCADE,
+  "joined_by"    uuid,
+  "joined_at"    timestamp with time zone,
   CONSTRAINT "household_invites_created_by_fkey" FOREIGN KEY (created_by) REFERENCES auth.users(id) ON DELETE CASCADE,
+  CONSTRAINT "household_invites_joined_by_fkey" FOREIGN KEY (joined_by) REFERENCES auth.users(id) ON DELETE CASCADE,
   CONSTRAINT "household_invites_pkey" PRIMARY KEY (token),
   CONSTRAINT "household_invites_household_id_fkey" FOREIGN KEY (household_id) REFERENCES public.households(id) ON DELETE CASCADE
 );
@@ -15,13 +15,13 @@ CREATE TABLE "public"."household_invites" (
 ALTER TABLE "public"."household_invites"
   ENABLE ROW LEVEL SECURITY;
 
-CREATE INDEX household_invites_accepted_by_idx ON public.household_invites USING btree (accepted_by);
-
 CREATE INDEX household_invites_created_by_idx ON public.household_invites USING btree (created_by);
 
 CREATE INDEX household_invites_household_id_idx ON public.household_invites USING btree (household_id);
 
-CREATE POLICY "household_invites_mint_by_member" ON "public"."household_invites"
+CREATE INDEX household_invites_joined_by_idx ON public.household_invites USING btree (joined_by);
+
+CREATE POLICY "household_invites_create_by_member" ON "public"."household_invites"
   FOR INSERT
   TO "authenticated"
   WITH CHECK ((private.is_member(household_id) AND (created_by = ( SELECT auth.uid() AS uid))));
@@ -38,7 +38,7 @@ CREATE POLICY "household_invites_revoke_by_member" ON "public"."household_invite
 
 REVOKE ALL ON TABLE "public"."household_invites" FROM "authenticated";
 
-GRANT MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE ON TABLE "public"."household_invites" TO "authenticated";
+GRANT DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE ON TABLE "public"."household_invites" TO "authenticated";
 
 REVOKE ALL ON TABLE "public"."household_invites" FROM "postgres";
 

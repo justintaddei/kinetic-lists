@@ -11,7 +11,7 @@ CREATE VIEW "public"."roster_stores" WITH (security_invoker=on) AS  SELECT id,
 
 REVOKE ALL ON TABLE "public"."roster_stores" FROM "anon";
 
-GRANT MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE ON TABLE "public"."roster_stores" TO "anon";
+GRANT MAINTAIN, REFERENCES, TRIGGER, TRUNCATE ON TABLE "public"."roster_stores" TO "anon";
 
 REVOKE ALL ON TABLE "public"."roster_stores" FROM "authenticated";
 

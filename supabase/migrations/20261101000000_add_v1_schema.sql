@@ -4,7 +4,10 @@
 -- `supabase/schemas/06_rpc.sql`, concatenated in file order, with nothing added and
 -- nothing reordered - and for this destination that concatenation *is* what
 -- `supabase db schema declarative sync --no-apply` would plan, so pushing it is the
--- baseline #4 needs.
+-- baseline #4 needs. (Those six seed files are deleted by the snapshot commit `720d2d2`;
+-- their text is `git show 32b3676:supabase/schemas/01_tenancy.sql`. This file is applied
+-- history and stays exactly as applied - `20261103000000_open_the_policy_verbs.sql` is
+-- what the review of it found missing, and history appends, it does not edit.)
 --
 -- WHY IT IS NOT `sync`'s OWN FILE. `sync` plans its diff on a shadow database booted by
 -- Docker Desktop (supabase/schemas/01_tenancy.sql:15-21 - that is why the tree is
@@ -38,8 +41,9 @@
 -- `pg_available_extensions` on hosted names `pgcrypto` and `uuid-ossp` only - no
 -- `pg_uuidv7` - and Postgres 17 has no built-in `uuidv7` (it lands in Postgres 18). The
 -- generator is invoker's rights, granted to `authenticated` and `service_role` and
--- revoked from `public`, so id minting needs no definer and the granted-to-`anon`
--- surface stays the three RPCs.
+-- revoked from `public`, so id minting needs no definer. The granted-to-`anon` surface is
+-- `preview_invitation` alone - measured 2026-11-02 on hosted's function ACLs; `buy_basket`
+-- and `join_household` are revoked from `anon` in this file (`:1108`, `:1186`).
 --
 -- WHAT #4 DOES WITH IT: push it, then `db schema declarative generate --linked
 -- --overwrite` snapshots hosted into the steady-state tree (`.pgdelta-export.json`
@@ -59,8 +63,8 @@
 --     written `btrim(x)`; `extract(epoch from x)` needs search_path = 'pg_catalog',
 --     which is why no function sets search_path = ''.
 --   * `(select auth.uid())` prints as ("select auth"."uid"()) and Postgres reads that as
---     an unterminated quoted identifier; the tree writes (select "auth"."uid"()) - six
---     sites.
+--     an unterminated quoted identifier; the tree writes (select "auth"."uid"()) - seven
+--     live sites (`:150, 246, 247, 315, 786, 996, 1122`), counted 2026-11-03.
 --   * String literals survive the printer: an empty string is written E''.
 
 -- ---- 01_tenancy.sql ----

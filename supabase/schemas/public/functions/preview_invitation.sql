@@ -9,7 +9,7 @@ CREATE OR REPLACE FUNCTION public.preview_invitation (
 declare
   v_invite record;
 begin
-  select "i"."household_id", "i"."expires_at", "i"."accepted_at", "h"."name"
+  select "i"."household_id", "i"."expires_at", "i"."joined_at", "h"."name"
     into "v_invite"
   from "public"."household_invites" "i"
   join "public"."households" "h" on "h"."id" = "i"."household_id"
@@ -21,7 +21,7 @@ begin
 
   return jsonb_build_object(
     'state', case
-      when "v_invite"."accepted_at" is not null then 'used'
+      when "v_invite"."joined_at" is not null then 'used'
       when "v_invite"."expires_at" <= "now"() then 'expired'
       else 'open'
     end,

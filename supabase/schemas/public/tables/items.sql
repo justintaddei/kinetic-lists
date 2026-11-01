@@ -32,6 +32,8 @@ CREATE POLICY "items_update_by_member" ON "public"."items"
   USING (private.is_member(household_id))
   WITH CHECK (private.is_member(household_id));
 
+GRANT DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE ON TABLE "public"."items" TO "authenticated";
+
 ALTER TABLE "public"."items"
   ADD COLUMN "id" uuid NOT NULL DEFAULT public.uuidv7();
 
@@ -45,10 +47,6 @@ CREATE TRIGGER items_ownership_keys_are_immutable
   BEFORE UPDATE OF id, household_id ON public.items
   FOR EACH ROW
   EXECUTE FUNCTION private.ownership_keys_are_immutable();
-
-REVOKE ALL ON TABLE "public"."items" FROM "authenticated";
-
-GRANT MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE ON TABLE "public"."items" TO "authenticated";
 
 REVOKE ALL ON TABLE "public"."items" FROM "postgres";
 

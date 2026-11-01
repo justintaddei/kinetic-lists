@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "nuxt build",
-    "db:types": "supabase gen types typescript --local --schema public > app/types/database.types.ts",
+    "db:types": "supabase gen types typescript --local --schema public --schema private > app/types/database.types.ts",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",

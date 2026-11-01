@@ -47,7 +47,7 @@ CREATE POLICY "item_store_tags_untag_by_member" ON "public"."item_store_tags"
 
 REVOKE ALL ON TABLE "public"."item_store_tags" FROM "authenticated";
 
-GRANT MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE ON TABLE "public"."item_store_tags" TO "authenticated";
+GRANT DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE ON TABLE "public"."item_store_tags" TO "authenticated";
 
 REVOKE ALL ON TABLE "public"."item_store_tags" FROM "postgres";
 

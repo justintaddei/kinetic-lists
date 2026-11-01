@@ -161,7 +161,7 @@ A row's tenancy and its owner expressed as one fact: a **composite foreign key i
 _Avoid_: composite key (alone), pair constraint, cross-table check
 
 **Definer set**:
-The granted functions a phone can call — **Buy**, **Join**, **Preview** — plus the ungranted helpers and erasers beside them. Tenancy is one of the ungranted ones: a definer reads Memberships so no policy has to read the table it guards. The set is closed: a fourth grant is a schema decision, not an implementation detail.
+The granted functions a phone can call — **Buy**, **Join**, **Preview** — plus the ungranted helpers and erasers beside them. Tenancy is one of the ungranted ones: a definer reads Memberships so no policy has to read the table it guards. The set is closed: a fourth grant is a schema decision, not an implementation detail. The schema ships a fourth granted function, `public.uuidv7()`, and it is not in the set: invoker's rights, `authenticated` and `service_role` only, so id minting runs as the phone itself and adds no privileged surface (measured on hosted 2026-11-02).
 _Avoid_: RPC, privileged function, definer function (say which one)
 
 **Kinetic View read**:
@@ -180,14 +180,19 @@ _Avoid_: idempotency key, request id, nonce
 The rule a cascade enforces after the fact, so an invariant never stands violated: a Household with no Member, a Purchase with no Line. The cascade arrives with nothing to announce it, and nobody to announce it to.
 _Avoid_: cascade, cleanup trigger, orphan delete
 
+**Server clocks**:
+The two forms the server's time takes in the schema, on purpose: a **Purchase** stamps `transaction_timestamp()`, so a Basket's lines and its Purchase are recorded at one instant even when the rows land in separate statements; **Check** stamps `clock_timestamp()`, the true now of the moment each Row was touched. The second is the one no definer needs, and the reason a Buy's recorded time never moves when lines are written.
+_Avoid_: now(), statement timestamp, server timestamp
+
 **Ownership keys**:
 The columns naming whose row a row is — `household_id`, and the parent key beside it. A **policy** may let a Member edit everything around them; the keys themselves **never move**, because an `UPDATE` policy that permits a rename does not understand a key, and pair keys carry Tenancy Check as an index. A trigger on `before update of` the keys is what stops a row walking to another owner.
 _Avoid_: reparent, re-home a row, move a row, ownership transfer
 
 **Grant posture**:
-The stance the database takes toward the two browser roles, stated in every declarative file: `anon` reaches the three **Definer set** calls and nothing else, each table, view and function opens by revoking `anon` and `public` and grants select per object, and the default privileges a hosted project is born with are carried declaratively as `alter default privileges` in the generated tree. Tenancy is the RLS that runs inside the grants, never a wider grant. Postgres has no role to hand the reading to; Supabase's defaults do the handing, so the posture is stated out loud.
+The stance the database takes toward the two browser roles, stated in every declarative file: each table, view and function opens by revoking `anon` and `public`, and the default privileges a hosted project is born with are carried declaratively as `alter default privileges` in the generated tree. Signed out that leaves **no read of any table or view** — the one path `anon` can take is **Preview**, whose read is a `security definer` (measured on hosted 2026-11-02: `anon` executes `preview_invitation` only, with `references`/`trigger`/`truncate` on the tables and no Data API route to any of it). Signed in, a table grants `authenticated` exactly the verbs its own policies open — insert, update, delete where a verb has a policy, and no `delete` on List Items, which is ADR-0022's rule (ADR-0023 amendment 6). Tenancy is the RLS that runs inside the grants, never a wider grant; **RLS picks which rows a verb may touch, and never confers the verb**, so a policy with no grant behind it is not a door that is merely locked. Postgres has no role to hand the reading to; Supabase's defaults do the handing, so the posture is stated out loud.
 _Avoid_: public schema access, default grants, broad read
 *2026-10-31: Amended after #3 - the posture is not "set once at the baseline" by an undeclarable statement: a `db pull` carries `alter default privileges` into manifest-tracked files, and the `revoke all on all …` migration sorting before the baseline is deleted (measured: `db push --linked --dry-run` refuses an out-of-order migration).*
+*2026-11-03: Amended after #4's review - "`anon` reaches the three Definer set calls" was never true of the shipped grants, and "grants select" said nothing about writes: the baseline carried no DML grant at all, and the verbs live on the tables now (ADR-0023 amendment 6).*
 
 ## UI Vocabulary
 

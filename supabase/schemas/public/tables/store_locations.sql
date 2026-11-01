@@ -36,6 +36,8 @@ CREATE POLICY "store_locations_update_position_by_member" ON "public"."store_loc
   USING (private.is_member(household_id))
   WITH CHECK (private.is_member(household_id));
 
+GRANT DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE ON TABLE "public"."store_locations" TO "authenticated";
+
 ALTER TABLE "public"."store_locations"
   ADD COLUMN "id" uuid NOT NULL DEFAULT public.uuidv7();
 
@@ -52,10 +54,6 @@ CREATE TRIGGER store_locations_ownership_keys_are_immutable
   BEFORE UPDATE OF id, household_id, store_id ON public.store_locations
   FOR EACH ROW
   EXECUTE FUNCTION private.ownership_keys_are_immutable();
-
-REVOKE ALL ON TABLE "public"."store_locations" FROM "authenticated";
-
-GRANT MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE ON TABLE "public"."store_locations" TO "authenticated";
 
 REVOKE ALL ON TABLE "public"."store_locations" FROM "postgres";
 

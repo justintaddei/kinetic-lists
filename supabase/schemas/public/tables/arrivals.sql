@@ -34,7 +34,7 @@ ALTER TABLE "public"."arrivals"
 
 REVOKE ALL ON TABLE "public"."arrivals" FROM "authenticated";
 
-GRANT MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE ON TABLE "public"."arrivals" TO "authenticated";
+GRANT INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE ON TABLE "public"."arrivals" TO "authenticated";
 
 REVOKE ALL ON TABLE "public"."arrivals" FROM "postgres";
 

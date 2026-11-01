@@ -17,8 +17,6 @@ CREATE INDEX purchase_lines_household_id_list_item_id_idx ON public.purchase_lin
 
 CREATE INDEX purchase_lines_item_id_idx ON public.purchase_lines USING btree (item_id);
 
-CREATE INDEX purchase_lines_list_item_id_idx ON public.purchase_lines USING btree (list_item_id);
-
 CREATE INDEX purchase_lines_purchase_id_idx ON public.purchase_lines USING btree (purchase_id);
 
 CREATE INDEX purchase_lines_store_id_idx ON public.purchase_lines USING btree (store_id);

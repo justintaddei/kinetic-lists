@@ -30,6 +30,8 @@ CREATE POLICY "stores_rename_by_member" ON "public"."stores"
   USING (private.is_member(household_id))
   WITH CHECK (private.is_member(household_id));
 
+GRANT DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE ON TABLE "public"."stores" TO "authenticated";
+
 ALTER TABLE "public"."stores"
   ADD COLUMN "id" uuid NOT NULL DEFAULT public.uuidv7();
 
@@ -43,10 +45,6 @@ CREATE TRIGGER stores_ownership_keys_are_immutable
   BEFORE UPDATE OF id, household_id ON public.stores
   FOR EACH ROW
   EXECUTE FUNCTION private.ownership_keys_are_immutable();
-
-REVOKE ALL ON TABLE "public"."stores" FROM "authenticated";
-
-GRANT MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE ON TABLE "public"."stores" TO "authenticated";
 
 REVOKE ALL ON TABLE "public"."stores" FROM "postgres";
 

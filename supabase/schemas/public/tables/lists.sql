@@ -39,7 +39,7 @@ CREATE TRIGGER lists_ownership_keys_are_immutable
 
 REVOKE ALL ON TABLE "public"."lists" FROM "authenticated";
 
-GRANT MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE ON TABLE "public"."lists" TO "authenticated";
+GRANT INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE ON TABLE "public"."lists" TO "authenticated";
 
 REVOKE ALL ON TABLE "public"."lists" FROM "postgres";
 

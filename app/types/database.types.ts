@@ -65,30 +65,30 @@ export type Database = {
       }
       household_invites: {
         Row: {
-          accepted_at: string | null
-          accepted_by: string | null
           created_at: string
           created_by: string
           expires_at: string
           household_id: string
+          joined_at: string | null
+          joined_by: string | null
           token: string
         }
         Insert: {
-          accepted_at?: string | null
-          accepted_by?: string | null
           created_at?: string
           created_by: string
           expires_at?: string
           household_id: string
+          joined_at?: string | null
+          joined_by?: string | null
           token?: string
         }
         Update: {
-          accepted_at?: string | null
-          accepted_by?: string | null
           created_at?: string
           created_by?: string
           expires_at?: string
           household_id?: string
+          joined_at?: string | null
+          joined_by?: string | null
           token?: string
         }
         Relationships: [
