@@ -16,4 +16,4 @@ Single-context: `GLOSSARY.md` at the repo root plus `docs/adr/`. See `docs/agent
 
 ### Supabase schema
 
-`supabase/schemas/*.sql` is the source of truth, applied through migration history. The advisory/lint register, the definer-suppression contract, and the steps no declarative file can express live in `docs/agents/advisors.md` — read it before touching `supabase/`.
+`supabase/schemas/*.sql` is the source of truth, applied through migration history. The advisory/lint register, the definer-suppression contract, the grant posture, and the steps only a migration carries live in `docs/agents/advisors.md` — read it before touching `supabase/`.

@@ -185,8 +185,9 @@ The columns naming whose row a row is — `household_id`, and the parent key bes
 _Avoid_: reparent, re-home a row, move a row, ownership transfer
 
 **Grant posture**:
-The stance the database takes toward the two browser roles, set once at the baseline: `anon` reaches the three **Definer set** calls and nothing else, the default privileges that hand `select` and `execute` to every new table are revoked, and the read the rosters need is granted per object. Tenancy is the RLS that runs inside the grants, never a wider grant. Postgres has no role to hand the reading to; Supabase's defaults do the handing, so the posture is stated out loud.
+The stance the database takes toward the two browser roles, stated in every declarative file: `anon` reaches the three **Definer set** calls and nothing else, each table, view and function opens by revoking `anon` and `public` and grants select per object, and the default privileges a hosted project is born with are carried declaratively as `alter default privileges` in the generated tree. Tenancy is the RLS that runs inside the grants, never a wider grant. Postgres has no role to hand the reading to; Supabase's defaults do the handing, so the posture is stated out loud.
 _Avoid_: public schema access, default grants, broad read
+*2026-10-31: Amended after #3 - the posture is not "set once at the baseline" by an undeclarable statement: a `db pull` carries `alter default privileges` into manifest-tracked files, and the `revoke all on all …` migration sorting before the baseline is deleted (measured: `db push --linked --dry-run` refuses an out-of-order migration).*
 
 ## UI Vocabulary
 
