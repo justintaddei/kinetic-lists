@@ -27,7 +27,7 @@ create table "stores" (
 -- ADR-0018: unique per Household, by index. Trim- and case-insensitive, which
 -- PostgREST can pre-check with `?name=eq.x`; the index is the backstop.
 create unique index "stores_name_household_idx"
-  on "stores" ("household_id", "lower"("trim"("name")));
+  on "stores" ("household_id", "lower"("btrim"("name")));
 
 alter table "stores" enable row level security;
 

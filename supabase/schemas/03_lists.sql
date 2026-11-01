@@ -60,7 +60,7 @@ create table "items" (
 -- ADR-0018: the Item name is unique per Household. Capture reads this index as
 -- the Merge/Make choice; the insert fails with 23505 and the UI re-offers Merge.
 create unique index "items_name_household_idx"
-  on "items" ("household_id", "lower"("trim"("name")));
+  on "items" ("household_id", "lower"("btrim"("name")));
 
 alter table "items" enable row level security;
 
