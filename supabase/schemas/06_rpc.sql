@@ -33,7 +33,7 @@ security definer
 set search_path = ''
 as $$
 declare
-  v_user uuid := ("select auth"."uid"());
+  v_user uuid := (select "auth"."uid"());
   v_household uuid;
   v_store_name text;
   v_purchase_id uuid;
@@ -159,7 +159,7 @@ security definer
 set search_path = ''
 as $$
 declare
-  v_user uuid := ("select auth"."uid"());
+  v_user uuid := (select "auth"."uid"());
   v_invite record;
   v_home record;
   v_display_name text;

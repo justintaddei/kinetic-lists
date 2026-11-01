@@ -81,7 +81,7 @@ begin
     select 1
     from "public"."household_members" "m"
     where "m"."household_id" = "p_household_id"
-      and "m"."user_id" = ("select auth"."uid"())
+      and "m"."user_id" = (select "auth"."uid"())
   );
 end;
 $$;
@@ -177,8 +177,8 @@ create policy "household_members_read_by_member"
 -- the trigger below, and Join is the only door into another Household.
 create policy "household_members_rename_self"
   on "household_members" for update to "authenticated"
-  using (("select auth"."uid"()) = "user_id")
-  with check (("select auth"."uid"()) = "user_id");
+  using ((select "auth"."uid"()) = "user_id")
+  with check ((select "auth"."uid"()) = "user_id");
 
 create trigger "household_members_ownership_keys_are_immutable"
   before update of "household_id", "user_id" on "household_members"
@@ -246,7 +246,7 @@ create policy "household_invites_mint_by_member"
   on "household_invites" for insert to "authenticated"
   with check (
     "private"."is_member"("household_id")
-    and "created_by" = ("select auth"."uid"())
+    and "created_by" = (select "auth"."uid"())
   );
 
 create policy "household_invites_revoke_by_member"

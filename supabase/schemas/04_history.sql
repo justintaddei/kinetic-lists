@@ -43,7 +43,7 @@ create policy "arrivals_record_own_by_member"
   on "arrivals" for insert to "authenticated"
   with check (
     "private"."is_member"("household_id")
-    and "user_id" = ("select auth"."uid"())
+    and "user_id" = (select "auth"."uid"())
   );
 
 -- ---------------------------------------------------------------- purchases
