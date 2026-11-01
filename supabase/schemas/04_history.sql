@@ -14,7 +14,7 @@
 -- It lives on each Line, through the Row the Line names.
 
 create table "arrivals" (
-  "id" uuid primary key default "extensions"."uuidv7"(),
+  "id" uuid primary key default "public"."uuidv7"(),
   "household_id" uuid not null,
   "user_id" uuid not null,
   "location_id" uuid not null,
@@ -49,7 +49,7 @@ create policy "arrivals_record_own_by_member"
 -- ---------------------------------------------------------------- purchases
 
 create table "purchases" (
-  "id" uuid primary key default "extensions"."uuidv7"(),
+  "id" uuid primary key default "public"."uuidv7"(),
   "household_id" uuid not null,
   "store_id" uuid not null,
   "location_id" uuid,
@@ -97,7 +97,7 @@ create policy "purchases_append_only"
 -- ----------------------------------------------------------- purchase_lines
 
 create table "purchase_lines" (
-  "id" uuid primary key default "extensions"."uuidv7"(),
+  "id" uuid primary key default "public"."uuidv7"(),
   "purchase_id" uuid not null,
   "household_id" uuid not null,
   "item_id" uuid not null,

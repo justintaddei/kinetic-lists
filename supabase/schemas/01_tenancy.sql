@@ -15,6 +15,56 @@
 -- warns - never fire on it. The three RPCs the browser calls live in `public`
 -- instead, and are the deliberate, suppressed `0028`/`0029` set (ADR-0023).
 
+-- ---------------------------------------------------------------- ids
+--
+-- ADR-0023's ids are uuidv7: 48 bits of millisecond clock, then entropy, so
+-- `order by "id"` is `order by the moment the row was born`, and a B-tree over
+-- ids stays append-friendly. Hosted has no uuidv7 to call: Postgres 17 has no
+-- such function (it lands in Postgres 18), and the linked project's available
+-- extensions are `pgcrypto` and `uuid-ossp` - measured 2026-11-01 over
+-- `pg_available_extensions`, with no `pg_uuidv7`, and uuid-ossp's generators
+-- stop at v1/v3/v4/v5. So the shape is ours, built from the text form of
+-- `gen_random_uuid()` (v4, ACL `NULL` = PUBLIC execute) and the server clock:
+-- 12 hex chars of big-endian milliseconds, `7` in the version nibble, `10xx` in
+-- the variant nibble, and 74 of the v4 bits left over (RFC 9562).
+--
+-- Invoker, not definer: a column default runs as the inserting role, so `execute`
+-- is the whole surface. The search_path has to be `pg_catalog`, not `''`, because
+-- `extract(epoch from ...)` is a keyword form that does not parse schema-qualified
+-- - the advisor's search-path warning stays off either way.
+
+create function "public"."uuidv7"()
+returns "pg_catalog"."uuid"
+language 'sql'
+volatile
+set search_path = 'pg_catalog'
+as $$
+  with "s" as (
+    select
+      floor(extract(epoch from clock_timestamp()) * 1000)::bigint as "ms",
+      replace(gen_random_uuid()::text, '-', '') as "r"
+  )
+  select
+    (
+      right('000000000000' || to_hex("s"."ms"), 12) ||
+      '7' ||
+      substr("s"."r", 14, 3) ||
+      substr('89ab', ((position(substr("s"."r", 17, 1) in '0123456789abcdef') - 1) % 4) + 1, 1) ||
+      substr("s"."r", 18, 15)
+    )::"pg_catalog"."uuid"
+  from "s"
+$$;
+
+alter function "public"."uuidv7"() owner to "postgres";
+
+-- Grants: not to `anon`. The writers are `authenticated` members, and the definer
+-- paths run as the owner; holding it back from `anon` keeps the granted-to-`anon`
+-- function surface at the count the advisory register carries.
+revoke execute on function "public"."uuidv7"() from public;
+grant execute on function "public"."uuidv7"() to "authenticated", "service_role";
+
+comment on function "public"."uuidv7"() is 'UUIDv7 from the server clock (RFC 9562): the id default of every household-owned row.';
+
 create schema if not exists "private";
 
 grant usage on schema "private" to "authenticated", "supabase_auth_admin";
@@ -75,7 +125,7 @@ revoke execute on function "private"."ownership_keys_are_immutable"() from publi
 -- ---------------------------------------------------------------- households
 
 create table "households" (
-  "id" uuid primary key default "extensions"."uuidv7"(),
+  "id" uuid primary key default "public"."uuidv7"(),
   "name" text not null default 'My Household'
 );
 

@@ -15,7 +15,7 @@
 -- Arrivals and Purchases.
 
 create table "stores" (
-  "id" uuid primary key default "extensions"."uuidv7"(),
+  "id" uuid primary key default "public"."uuidv7"(),
   "household_id" uuid not null,
   "name" text not null,
   -- The composite target for every `(..., store_id)` pair foreign key.
@@ -61,7 +61,7 @@ create policy "stores_delete_by_member"
 -- ----------------------------------------------------------- store_locations
 
 create table "store_locations" (
-  "id" uuid primary key default "extensions"."uuidv7"(),
+  "id" uuid primary key default "public"."uuidv7"(),
   "store_id" uuid not null,
   "household_id" uuid not null,
   "lat" double precision not null check ("lat" between -90 and 90),

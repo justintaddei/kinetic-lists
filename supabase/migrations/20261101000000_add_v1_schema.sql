@@ -1,28 +1,51 @@
--- #3 / #4 — the v1 baseline: the whole declarative tree, as one migration.
+-- #3 / #4 - the v1 baseline, as one migration: the declarative tree concatenated in file order.
 --
--- This file is the concatenation of `supabase/schemas/01_tenancy.sql` … `06_rpc.sql`, in file
--- order, with nothing added and nothing reordered. It exists because the tool that mints this
--- migration (`supabase db schema declarative sync --no-apply`) plans a diff on a shadow database
--- booted by Docker Desktop, and that engine is unavailable in this workspace
--- (`500 Internal Server Error` on `\\.\pipe\dockerDesktopLinuxEngine`). Concatenation is the
--- plan for this destination: `db push --linked` is up-to-date against hosted, whose `public`
--- schema is empty (measured 2026-11-01: no tables, history = `20261030005109` +
--- `20261031000000`), so the tree's objects are all creates and no statement has a prior to depend on.
+-- THE CLAIM: this file is `supabase/schemas/01_tenancy.sql` through
+-- `supabase/schemas/06_rpc.sql`, concatenated in file order, with nothing added and
+-- nothing reordered - and for this destination that concatenation *is* what
+-- `supabase db schema declarative sync --no-apply` would plan, so pushing it is the
+-- baseline #4 needs.
 --
--- File order is dependency order, checked by walking the concatenation with libpg_query (PG 17):
--- every relation, function and grant a statement references is created earlier in this file
--- (12 tables, 2 views, 9 functions, 11 triggers, 32 policies, 25 indexes; the only external
--- relation is `auth.users`, whose trigger `on_auth_user_created` comes last in `01_tenancy.sql`).
+-- WHY IT IS NOT `sync`'s OWN FILE. `sync` plans its diff on a shadow database booted by
+-- Docker Desktop (supabase/schemas/01_tenancy.sql:15-21 - that is why the tree is
+-- declaration-only). This machine's Docker engine answers `500 Internal Server Error`
+-- on `\\.\pipe\dockerDesktopLinuxEngine`: `docker info` fails on the same pipe, and
+-- `supabase migration list --local` reports `ECONNREFUSED 127.0.0.1:54322`. So the plan
+-- is derived by hand and verified by the checks below, and the steady-state tree that
+-- `sync` acts on comes from `db schema declarative generate --linked` in the same PR.
 --
--- `create extension` is deliberately absent: hosted already has `pgcrypto` and `uuid-ossp`, and a
--- migration may not fail on a destination that already has them. A local stack gets the extensions
--- from the image, so `supabase start` + `db reset` need nothing here either.
+-- WHY THE CONCATENATION IS THE PLAN, MEASURED ON THE DESTINATION 2026-11-01:
+--   * history `20261030005109` + `20261031000000` on BOTH sides (local folder and
+--     `supabase_migrations.schema_migrations`);
+--   * hosted `public` holds no tables at all (`information_schema.tables` is empty - the
+--     demo `lists` table is retired by pushing this), `auth.users` is empty, and the
+--     advisory defaults sit on `anon`/`authenticated`/`service_role` as `Dxtm`;
+--   * `db push --linked --dry-run` on this file is the only thing it would apply.
+-- With an empty target and an applied history, every statement here is a create with no
+-- prior to depend on, and no drop is needed: a push is one transaction, so the earlier
+-- failed push of this file left hosted at the same 0 tables and the same 2 applied
+-- versions (measured after the fact).
 --
--- This migration is what #4's `db schema declarative sync` must reproduce: after it is pushed,
--- `db schema declarative generate --linked --overwrite` snapshots hosted into the steady-state
--- tree, the six seed files delete in the same commit, and every later change is a declarative
--- diff. Any drift between this file and what `sync` mints shows up the first time #4 runs sync
--- against the snapshot.
+-- WHY FILE ORDER IS DEPENDENCY ORDER, MEASURED OVER THE 140 PARSED STATEMENTS (pglast
+-- v8.7, libpg_query PG 17): 12 tables, 2 views, 10 functions, 11 triggers, 32 policies,
+-- 27 `create index`, 30 grants, 13 `alter table`, 1 `create schema`, 1 `alter owner`,
+-- 1 `comment`; every relation a statement references, every trigger function, and every
+-- grant target is created earlier in this file; the only relation outside it, at any
+-- depth, is `auth.users`, whose trigger `on_auth_user_created` follows its function.
+--
+-- THE FILE DECLARES NO EXTENSION AND NEEDS NONE. The ids default to `public.uuidv7()`
+-- (supabase/schemas/01_tenancy.sql:36-66), which this file creates:
+-- `pg_available_extensions` on hosted names `pgcrypto` and `uuid-ossp` only - no
+-- `pg_uuidv7` - and Postgres 17 has no built-in `uuidv7` (it lands in Postgres 18). The
+-- generator is invoker's rights, granted to `authenticated` and `service_role` and
+-- revoked from `public`, so id minting needs no definer and the granted-to-`anon`
+-- surface stays the three RPCs.
+--
+-- WHAT #4 DOES WITH IT: push it, then `db schema declarative generate --linked
+-- --overwrite` snapshots hosted into the steady-state tree (`.pgdelta-export.json`
+-- included), the six seed files delete in that commit, and every later change is a
+-- declarative diff. ADOPT-5 names the drift check: run `sync` against the snapshot and
+-- expect an empty plan - any statement this file got wrong shows up there.
 
 -- ---- 01_tenancy.sql ----
 -- Tenancy: the Household, its Members, its Invitations.
@@ -41,6 +64,56 @@
 -- function has no HTTP surface, and lints `0028`/`0029` - the SECURITY DEFINER
 -- warns - never fire on it. The three RPCs the browser calls live in `public`
 -- instead, and are the deliberate, suppressed `0028`/`0029` set (ADR-0023).
+
+-- ---------------------------------------------------------------- ids
+--
+-- ADR-0023's ids are uuidv7: 48 bits of millisecond clock, then entropy, so
+-- `order by "id"` is `order by the moment the row was born`, and a B-tree over
+-- ids stays append-friendly. Hosted has no uuidv7 to call: Postgres 17 has no
+-- such function (it lands in Postgres 18), and the linked project's available
+-- extensions are `pgcrypto` and `uuid-ossp` - measured 2026-11-01 over
+-- `pg_available_extensions`, with no `pg_uuidv7`, and uuid-ossp's generators
+-- stop at v1/v3/v4/v5. So the shape is ours, built from the text form of
+-- `gen_random_uuid()` (v4, ACL `NULL` = PUBLIC execute) and the server clock:
+-- 12 hex chars of big-endian milliseconds, `7` in the version nibble, `10xx` in
+-- the variant nibble, and 74 of the v4 bits left over (RFC 9562).
+--
+-- Invoker, not definer: a column default runs as the inserting role, so `execute`
+-- is the whole surface. The search_path has to be `pg_catalog`, not `''`, because
+-- `extract(epoch from ...)` is a keyword form that does not parse schema-qualified
+-- - the advisor's search-path warning stays off either way.
+
+create function "public"."uuidv7"()
+returns "pg_catalog"."uuid"
+language 'sql'
+volatile
+set search_path = 'pg_catalog'
+as $$
+  with "s" as (
+    select
+      floor(extract(epoch from clock_timestamp()) * 1000)::bigint as "ms",
+      replace(gen_random_uuid()::text, '-', '') as "r"
+  )
+  select
+    (
+      right('000000000000' || to_hex("s"."ms"), 12) ||
+      '7' ||
+      substr("s"."r", 14, 3) ||
+      substr('89ab', ((position(substr("s"."r", 17, 1) in '0123456789abcdef') - 1) % 4) + 1, 1) ||
+      substr("s"."r", 18, 15)
+    )::"pg_catalog"."uuid"
+  from "s"
+$$;
+
+alter function "public"."uuidv7"() owner to "postgres";
+
+-- Grants: not to `anon`. The writers are `authenticated` members, and the definer
+-- paths run as the owner; holding it back from `anon` keeps the granted-to-`anon`
+-- function surface at the count the advisory register carries.
+revoke execute on function "public"."uuidv7"() from public;
+grant execute on function "public"."uuidv7"() to "authenticated", "service_role";
+
+comment on function "public"."uuidv7"() is 'UUIDv7 from the server clock (RFC 9562): the id default of every household-owned row.';
 
 create schema if not exists "private";
 
@@ -102,7 +175,7 @@ revoke execute on function "private"."ownership_keys_are_immutable"() from publi
 -- ---------------------------------------------------------------- households
 
 create table "households" (
-  "id" uuid primary key default "extensions"."uuidv7"(),
+  "id" uuid primary key default "public"."uuidv7"(),
   "name" text not null default 'My Household'
 );
 
@@ -304,7 +377,7 @@ create trigger "on_auth_user_created"
 -- Arrivals and Purchases.
 
 create table "stores" (
-  "id" uuid primary key default "extensions"."uuidv7"(),
+  "id" uuid primary key default "public"."uuidv7"(),
   "household_id" uuid not null,
   "name" text not null,
   -- The composite target for every `(..., store_id)` pair foreign key.
@@ -350,7 +423,7 @@ create policy "stores_delete_by_member"
 -- ----------------------------------------------------------- store_locations
 
 create table "store_locations" (
-  "id" uuid primary key default "extensions"."uuidv7"(),
+  "id" uuid primary key default "public"."uuidv7"(),
   "store_id" uuid not null,
   "household_id" uuid not null,
   "lat" double precision not null check ("lat" between -90 and 90),
@@ -414,7 +487,7 @@ create policy "store_locations_delete_by_member"
 -- so the composite pair keys can point at it (ADR-0023).
 
 create table "lists" (
-  "id" uuid primary key default "extensions"."uuidv7"(),
+  "id" uuid primary key default "public"."uuidv7"(),
   "household_id" uuid not null,
   "name" text not null,
   unique ("household_id", "id"),
@@ -449,7 +522,7 @@ create trigger "lists_ownership_keys_are_immutable"
 -- ------------------------------------------------------------------- items
 
 create table "items" (
-  "id" uuid primary key default "extensions"."uuidv7"(),
+  "id" uuid primary key default "public"."uuidv7"(),
   "household_id" uuid not null,
   "name" text not null,
   "category" text,
@@ -491,7 +564,7 @@ create policy "items_delete_by_member"
 -- -------------------------------------------------------------- list_items
 
 create table "list_items" (
-  "id" uuid primary key default "extensions"."uuidv7"(),
+  "id" uuid primary key default "public"."uuidv7"(),
   "list_id" uuid not null,
   "item_id" uuid not null,
   "household_id" uuid not null,
@@ -665,7 +738,7 @@ create policy "item_store_tags_untag_by_member"
 -- It lives on each Line, through the Row the Line names.
 
 create table "arrivals" (
-  "id" uuid primary key default "extensions"."uuidv7"(),
+  "id" uuid primary key default "public"."uuidv7"(),
   "household_id" uuid not null,
   "user_id" uuid not null,
   "location_id" uuid not null,
@@ -700,7 +773,7 @@ create policy "arrivals_record_own_by_member"
 -- ---------------------------------------------------------------- purchases
 
 create table "purchases" (
-  "id" uuid primary key default "extensions"."uuidv7"(),
+  "id" uuid primary key default "public"."uuidv7"(),
   "household_id" uuid not null,
   "store_id" uuid not null,
   "location_id" uuid,
@@ -748,7 +821,7 @@ create policy "purchases_append_only"
 -- ----------------------------------------------------------- purchase_lines
 
 create table "purchase_lines" (
-  "id" uuid primary key default "extensions"."uuidv7"(),
+  "id" uuid primary key default "public"."uuidv7"(),
   "purchase_id" uuid not null,
   "household_id" uuid not null,
   "item_id" uuid not null,

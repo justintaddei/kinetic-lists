@@ -12,7 +12,7 @@
 -- so the composite pair keys can point at it (ADR-0023).
 
 create table "lists" (
-  "id" uuid primary key default "extensions"."uuidv7"(),
+  "id" uuid primary key default "public"."uuidv7"(),
   "household_id" uuid not null,
   "name" text not null,
   unique ("household_id", "id"),
@@ -47,7 +47,7 @@ create trigger "lists_ownership_keys_are_immutable"
 -- ------------------------------------------------------------------- items
 
 create table "items" (
-  "id" uuid primary key default "extensions"."uuidv7"(),
+  "id" uuid primary key default "public"."uuidv7"(),
   "household_id" uuid not null,
   "name" text not null,
   "category" text,
@@ -89,7 +89,7 @@ create policy "items_delete_by_member"
 -- -------------------------------------------------------------- list_items
 
 create table "list_items" (
-  "id" uuid primary key default "extensions"."uuidv7"(),
+  "id" uuid primary key default "public"."uuidv7"(),
   "list_id" uuid not null,
   "item_id" uuid not null,
   "household_id" uuid not null,
