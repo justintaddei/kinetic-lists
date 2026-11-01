@@ -36,7 +36,10 @@ Tabs, sheets, and the first run: `08-basket-full.png` (Buy verb carries the Arri
 `06-flat-fresh.png` (the emptiness, `UiEmpty` + Mint), `11-store-picker.png`, `12-mint-header.png`,
 `13-capture.png`, `14-item-sheet.png` (Tag pills, live-edit), `15-store-screen.png` (Locations,
 `Stand here`, presence), `22-store-screen-bare.png` (the Bare Store's copy), `16-cascade.png`
-(the Cascade's counts), `17-mint-buy.png` (Mint from the Buy verb), `18-scenario-panel.png`.
+(the Cascade's counts), `17-mint-buy.png` (Mint from the Buy verb), `05-flat-wall.png` (the
+25-Store wall, flat), `18-scenario-panel.png` and `21-shelf-panel.png` (the switcher panel open
+on flat and on shelf), `24-capture-notag.png` (Capture with no Tag written),
+`23-item-untagged.png` (the Item sheet on an untagged row: empty pills, the gate copy).
 
 ## What the prototype answers
 

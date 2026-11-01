@@ -84,7 +84,7 @@ const TABS = [
     </nav>
 
     <!-- A write's own report lives at the eye; the Buy report lives by the verb. -->
-    <UiSonner position="top-center" :gap="8" :mobile-offset="24" :toaster-id="1" />
-    <UiSonner position="bottom-center" :gap="8" :mobile-offset="120" :toaster-id="2" :visible-toasts="2" />
+    <UiToaster position="top-center" :gap="8" :mobile-offset="24" :toaster-id="1" />
+    <UiToaster position="bottom-center" :gap="8" :mobile-offset="120" :toaster-id="2" :visible-toasts="2" />
   </div>
 </template>

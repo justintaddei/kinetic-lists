@@ -43,9 +43,15 @@ const existing = computed(() => itemByName(name.value.trim()))
         </div>
         <div>
           <UiLabel for="capture-list">List</UiLabel>
-          <UiSelect id="capture-list" v-model="listId" class="mt-1 w-full" data-capture-list>
+          <!-- A native select: ADR-0020 ships native affordances (datalist, input type=time), not reka chrome. -->
+          <select
+            id="capture-list"
+            v-model="listId"
+            class="border-input bg-background mt-1 h-11 w-full rounded-md border px-3 text-base"
+            data-capture-list
+          >
             <option v-for="entry in listsWithCounts" :key="entry.list.id" :value="entry.list.id">{{ entry.list.name }}</option>
-          </UiSelect>
+          </select>
         </div>
         <div>
           <UiLabel>Store Tags</UiLabel>
