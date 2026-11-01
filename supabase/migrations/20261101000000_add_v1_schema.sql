@@ -994,7 +994,7 @@ begin
   from "public"."stores" "s"
   where "s"."id" = "p_store_id";
 
-  if "v_household" is null or not ("select "private"."is_member"("v_household")) then
+  if "v_household" is null or not (select "private"."is_member"("v_household")) then
     raise exception 'Buy names a Store your Household does not own' using errcode = '42501';
   end if;
 
