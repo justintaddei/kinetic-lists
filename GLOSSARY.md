@@ -181,7 +181,7 @@ The rule a cascade enforces after the fact, so an invariant never stands violate
 _Avoid_: cascade, cleanup trigger, orphan delete
 
 **Server clocks**:
-The two forms the server's time takes in the schema, on purpose: a **Purchase** stamps `transaction_timestamp()`, so a Basket's lines and its Purchase are recorded at one instant even when the rows land in separate statements; **Check** stamps `clock_timestamp()`, the true now of the moment each Row was touched. The second is the one no definer needs, and the reason a Buy's recorded time never moves when lines are written.
+The three forms the server's time takes in the schema, measured in the tree: **Buy** stamps one clock — `transaction_timestamp()` read once into a variable, so a Basket's Purchase, its Lines and the Rows it stocks are recorded at the same instant even by a definer that writes them in several statements; `now()` is a column default (`arrived_at`, an Invitation's `created_at` and `expires_at`, a Tag's `created_at`), the time a row arrives; and `clock_timestamp()` is read exactly once, inside `uuidv7()`, because an id must carry the real millisecond and a pinned one would repeat. A phone-supplied timestamp is only ever **Sold At** — the day the shopper stood in the shop, which the server cannot know.
 _Avoid_: now(), statement timestamp, server timestamp
 
 **Ownership keys**:
