@@ -223,3 +223,35 @@ _Avoid_: warning, destructive dialog, are-you-sure, confirm modal
 **Owned set**:
 The shadcn-vue components copied into `app/components/ui/**` — app-owned code with registry-stable names, added with `pnpm dlx shadcn-vue@latest add <name>`, edited as we need. A screen uses them through Nuxt auto-import (`<UiButton>`, `<UiToaster>`) with no import lines (ADR-0020).
 _Avoid_: component library, dependency, registry package, design system
+
+**Tab bar**:
+The **shell**'s spine in `app/layouts/app.vue` — four labelled links (**Kinetic View**, **Lists**, **Basket**, **Household**), each an icon and a `text-xs` label under a hairline, marked with `aria-current`, the Basket's label carrying its count (`Basket · 3`). It says where you are; no header does (ADR-0024).
+_Avoid_: bottom nav, menu, sidebar, tab strip, tabs
+
+**Header**:
+The Kinetic View's one row of chrome: the ghost **Active Store** control (opening the **Store picker**, ticking when an **Arrival** named a **Standing Location**) and a 44px ghost door to the **Store screen**. Two controls, no copy line, no Location line, no tab title. Every other tab runs headerless and opens with its **DrawerTitle** (ADR-0024).
+_Avoid_: app bar, top bar, toolbar, nav bar, breadcrumb
+
+**FAB**:
+The Capture **FAB** — a 44px circle (`size-11 rounded-full`, `LucidePlus`) floating above the tab bar on every screen, opening the **Capture sheet** with no scrim of its own. The shell's one floating control (ADR-0024).
+_Avoid_: add button, plus button, compose button, speed dial
+
+**Data row**:
+The 48px tap target of every list — **Kinetic View**, **per-List**, **Basket**, both **rosters**, the Store screen's Locations — a `min-h-12` row under a hairline carrying the **Check affordance** where rows live, the name, and one **quiet line**; row tap opens the **Item sheet**. One target per row, no swipe, no row button, no chevron (ADR-0022, ADR-0024).
+_Avoid_: list item, card, tile, cell, row expander
+
+**Quiet line**:
+The one muted line under a row's name (`Walmart · 2 Locations`, `Milk · 3 Lists · Walmart, Big Y`, `Geofence 150 m · 42.30142, -71.10101`) in `text-sm text-muted-foreground`, joined by `·`. The row's whole count story, never a second line and never a chip (ADR-0022, ADR-0024).
+_Avoid_: subtitle, meta line, caption, badge row, chip
+
+**Gate copy**:
+The Kinetic View's last quiet line: the count of Basket Items with no Tag for the Active Store, naming them and the verb — `12 Needed · 1 In Basket · 3 with no Tag at Walmart — Tag them`. #13's gate, the warning the capture form shares, the app's only standing prompt (ADR-0024).
+_Avoid_: warning banner, alert, toast, empty state, hint
+
+**Filter field**:
+The labelled input a roster grows at six rows — **Store roster** (`Filter Stores`), **Item roster** (`Filter Items`), the **Lists** tab, the **Store picker** — substring, household-local names, nothing else (ADR-0019, ADR-0024).
+_Avoid_: search box, type-ahead, sort control, filter chips, facets
+
+**Mint sheet**:
+The one sheet that creates a **Store** (with a door for the **Store picker**'s sticky entry, Buy's "name this shop", a **Bare Store**'s ask, and capture's `+ Add a store from where I am now`): its rename door carries the name field, and the sheet mints a Store and its first **Location** from one **Position** — coordinates read once, never stored, never shown (ADR-0013, ADR-0016, ADR-0021, ADR-0024).
+_Avoid_: add store, create store, location sheet, store form, map picker
