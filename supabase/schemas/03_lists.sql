@@ -186,7 +186,7 @@ create function "private"."tag_pairs_one_household"()
 returns trigger
 language 'plpgsql'
 security definer
-set search_path = ''
+set search_path = 'pg_catalog'
 as $$
 declare
   v_item_household uuid;

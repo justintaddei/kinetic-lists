@@ -30,7 +30,7 @@ create function "public"."buy_basket"(
 returns jsonb
 language 'plpgsql'
 security definer
-set search_path = ''
+set search_path = 'pg_catalog'
 as $$
 declare
   v_user uuid := (select "auth"."uid"());
@@ -156,7 +156,7 @@ create function "public"."join_household"("p_token" uuid)
 returns jsonb
 language 'plpgsql'
 security definer
-set search_path = ''
+set search_path = 'pg_catalog'
 as $$
 declare
   v_user uuid := (select "auth"."uid"());
@@ -197,10 +197,10 @@ begin
   end if;
 
   select coalesce(
-    nullif("raw_user_meta_data" ->> 'name', ''),
-    nullif("raw_user_meta_data" ->> 'preferred_username', ''),
-    nullif("raw_user_meta_data" ->> 'full_name', ''),
-    nullif("raw_user_meta_data" ->> 'user_name', ''),
+    nullif("raw_user_meta_data" ->> 'name', E''),
+    nullif("raw_user_meta_data" ->> 'preferred_username', E''),
+    nullif("raw_user_meta_data" ->> 'full_name', E''),
+    nullif("raw_user_meta_data" ->> 'user_name', E''),
     split_part("email", '@', 1)
   )
   into "v_display_name"
@@ -236,7 +236,7 @@ create function "public"."preview_invitation"("p_token" uuid)
 returns jsonb
 language 'plpgsql'
 security definer
-set search_path = ''
+set search_path = 'pg_catalog'
 as $$
 declare
   v_invite record;

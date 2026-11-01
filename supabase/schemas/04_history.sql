@@ -151,7 +151,7 @@ create function "private"."erase_lineless_purchase"()
 returns trigger
 language 'plpgsql'
 security definer
-set search_path = ''
+set search_path = 'pg_catalog'
 as $$
 begin
   delete from "public"."purchases" "p"

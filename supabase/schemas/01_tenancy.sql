@@ -42,7 +42,7 @@ as $$
   with "s" as (
     select
       floor(extract(epoch from clock_timestamp()) * 1000)::bigint as "ms",
-      replace(gen_random_uuid()::text, '-', '') as "r"
+      replace(gen_random_uuid()::text, '-', E'') as "r"
   )
   select
     (
@@ -73,7 +73,7 @@ create function "private"."is_member"("p_household_id" uuid)
 returns boolean
 language 'plpgsql'
 security definer
-set search_path = ''
+set search_path = 'pg_catalog'
 stable
 as $$
 begin
@@ -100,7 +100,7 @@ create function "private"."ownership_keys_are_immutable"()
 returns trigger
 language 'plpgsql'
 security definer
-set search_path = ''
+set search_path = 'pg_catalog'
 as $$
 declare
   v_old jsonb := "to_jsonb"("old");
@@ -191,7 +191,7 @@ create function "private"."erase_empty_household"()
 returns trigger
 language 'plpgsql'
 security definer
-set search_path = ''
+set search_path = 'pg_catalog'
 as $$
 begin
   delete from "public"."households" "h"
@@ -262,7 +262,7 @@ create function "private"."handle_new_user"()
 returns trigger
 language 'plpgsql'
 security definer
-set search_path = ''
+set search_path = 'pg_catalog'
 as $$
 declare
   v_display_name text;
@@ -272,10 +272,10 @@ begin
   -- preferred_username, full_name, user_name, then the email local part.
   -- identity_data is never read (ADR-0019's warning about raw_app_meta_data).
   select coalesce(
-    nullif("raw_user_meta_data" ->> 'name', ''),
-    nullif("raw_user_meta_data" ->> 'preferred_username', ''),
-    nullif("raw_user_meta_data" ->> 'full_name', ''),
-    nullif("raw_user_meta_data" ->> 'user_name', ''),
+    nullif("raw_user_meta_data" ->> 'name', E''),
+    nullif("raw_user_meta_data" ->> 'preferred_username', E''),
+    nullif("raw_user_meta_data" ->> 'full_name', E''),
+    nullif("raw_user_meta_data" ->> 'user_name', E''),
     split_part("email", '@', 1)
   )
   into "v_display_name"
