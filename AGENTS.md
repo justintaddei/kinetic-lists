@@ -13,3 +13,7 @@ Default vocabulary — `needs-triage`, `needs-info`, `ready-for-agent`, `ready-f
 ### Domain docs
 
 Single-context: `GLOSSARY.md` at the repo root plus `docs/adr/`. See `docs/agents/domain.md`.
+
+### Supabase schema
+
+`supabase/schemas/*.sql` is the source of truth, applied through migration history. The advisory/lint register, the definer-suppression contract, and the steps no declarative file can express live in `docs/agents/advisors.md` — read it before touching `supabase/`.
