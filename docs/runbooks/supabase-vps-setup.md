@@ -28,12 +28,12 @@ production data from a machine that is not the authoritative stack, and
 
 ## The strings, recorded
 
-| What | Value |
-| --- | --- |
-| Origin (Site URL) | `https://kinetic-lists.justintaddei.com` — nginx + certbot already front it |
-| OAuth callback | `https://ohbrawtgcyngyhaqtddy.supabase.co/auth/v1/callback` |
-| Redirect URLs | `https://kinetic-lists.justintaddei.com/confirm` · `http://localhost:3000/confirm` · `http://localhost:3000` |
-| OAuth App | **Device Flow off** (the wizard names the box to untick) |
+| What                  | Value                                                                                                                     |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Origin (Site URL)     | `https://kinetic-lists.justintaddei.com` — nginx + certbot already front it                                               |
+| OAuth callback        | `https://ohbrawtgcyngyhaqtddy.supabase.co/auth/v1/callback`                                                               |
+| Redirect URLs         | `https://kinetic-lists.justintaddei.com/confirm` · `http://localhost:3000/confirm` · `http://localhost:3000`              |
+| OAuth App             | **Device Flow off** (the wizard names the box to untick)                                                                  |
 | Where the secret goes | Studio only. GoTrue exchanges the code server-side, so the Client Secret is **never** in `.env`, CI, the VPS, or the repo |
 
 A single `*` in a redirect pattern stops at `/` — it cannot reach `/confirm`, so
@@ -49,14 +49,14 @@ The deploy box is **not a git remote**: git-over-SSH deploy keys are out, so CI
 builds the artifact and rsyncs it. The wizard mints the key pair under
 `.secrets/deploy_key` (gitignored) and sets, via `gh`:
 
-| Kind | Name | Notes |
-| --- | --- | --- |
-| secret | `SSH_PRIVATE_KEY` | the deploy private key; the only private value in the deploy path |
+| Kind   | Name              | Notes                                                                                                          |
+| ------ | ----------------- | -------------------------------------------------------------------------------------------------------------- |
+| secret | `SSH_PRIVATE_KEY` | the deploy private key; the only private value in the deploy path                                              |
 | secret | `SSH_KNOWN_HOSTS` | the `ssh-keyscan` block for `SSH_HOST`, pasted back from the box — a runner cannot answer a fingerprint prompt |
-| var | `SSH_HOST` | the box's SSH host, usually `kinetic-lists.justintaddei.com` |
-| var | `SSH_USER` | unprivileged deploy user; `User=` of the service |
-| var | `APP_ROOT` | release root, e.g. `/opt/kinetic-lists` (`releases/`, `shared/`, `current` symlink) |
-| var | `RUNTIME_PORT` | port Nitro listens on behind nginx, e.g. `3000` |
+| var    | `SSH_HOST`        | the box's SSH host, usually `kinetic-lists.justintaddei.com`                                                   |
+| var    | `SSH_USER`        | unprivileged deploy user; `User=` of the service                                                               |
+| var    | `APP_ROOT`        | release root, e.g. `/opt/kinetic-lists` (`releases/`, `shared/`, `current` symlink)                            |
+| var    | `RUNTIME_PORT`    | port Nitro listens on behind nginx, e.g. `3000`                                                                |
 
 Deploy shape: `pnpm build` on `ubuntu-latest` (Node 22) → `actions/upload-artifact`
 (**pin `retention-days`** — the default is 7) → rsync with `--delete` into
@@ -93,11 +93,11 @@ publishable key returned `"github": true, "email": false` on 2026-11-02. So the
 local stack is the only place email sign-in exists, and the wizard mints the
 account:
 
-| Key (in `.env`, gitignored) | Value |
-| --- | --- |
-| `DEV_LOGIN_EMAIL` | `<sha256(local part) hex>@example.com` — GoTrue derives it from the password's local part (`generateEmailForSSO`) |
-| `DEV_LOGIN_PASSWORD` | the password whose **local part** is hashed to that email (`apps/auth/internal/cast/generate_hash.go`) |
-| `DEV_LOGIN_SERVICE_ROLE_KEY` | local only, from `pnpm exec supabase status -o env` |
+| Key (in `.env`, gitignored)  | Value                                                                                                             |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `DEV_LOGIN_EMAIL`            | `<sha256(local part) hex>@example.com` — GoTrue derives it from the password's local part (`generateEmailForSSO`) |
+| `DEV_LOGIN_PASSWORD`         | the password whose **local part** is hashed to that email (`apps/auth/internal/cast/generate_hash.go`)            |
+| `DEV_LOGIN_SERVICE_ROLE_KEY` | local only, from `pnpm exec supabase status -o env`                                                               |
 
 The **dev sign-in card and its server route are app code and belong to
 [#27]** — the wizard's Stage 2 records why, and #27's comments carry the two file
