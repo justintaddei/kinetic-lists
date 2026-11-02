@@ -51,7 +51,8 @@ builds the artifact and rsyncs it. The wizard mints the key pair under
 
 | Kind | Name | Notes |
 | --- | --- | --- |
-| secret | `SSH_PRIVATE_KEY` | the deploy private key; the only secret in the deploy path |
+| secret | `SSH_PRIVATE_KEY` | the deploy private key; the only private value in the deploy path |
+| secret | `SSH_KNOWN_HOSTS` | the `ssh-keyscan` block for `SSH_HOST`, pasted back from the box — a runner cannot answer a fingerprint prompt |
 | var | `SSH_HOST` | the box's SSH host, usually `kinetic-lists.justintaddei.com` |
 | var | `SSH_USER` | unprivileged deploy user; `User=` of the service |
 | var | `APP_ROOT` | release root, e.g. `/opt/kinetic-lists` (`releases/`, `shared/`, `current` symlink) |

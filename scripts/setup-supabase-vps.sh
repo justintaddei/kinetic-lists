@@ -353,6 +353,12 @@ if confirm "Generate a dedicated deploy key pair under ${KEY_DIR}/ (private key 
   say "Public key — you install this on the box in the next stage:"
   note "  $(cat "${KEY_DIR}/deploy_key.pub")"
 fi
+say "The CI needs the host key too: rsync against a host with no known_hosts entry"
+say "stops at the fingerprint prompt, which a CI runner cannot answer. On the box:"
+say "   ssh-keyscan -t ed25519,ecdsa,rsa ${SSH_HOST:-host}"
+say "Paste the whole block back here (it is public, and it is what the deploy trusts):"
+ask_secret SSH_KNOWN_HOSTS "ssh-keyscan output for ${SSH_HOST:-the box}"
+set_secret SSH_KNOWN_HOSTS "$SSH_KNOWN_HOSTS"
 
 # ── Stage 7 ───────────────────────────────────────────────────────────────
 stage "The box, once, as root (you run these; the wizard only prints them)"
