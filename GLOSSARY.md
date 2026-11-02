@@ -195,6 +195,20 @@ _Avoid_: public schema access, default grants, broad read
 *2026-10-31: Amended after #3 - the posture is not "set once at the baseline" by an undeclarable statement: a `db pull` carries `alter default privileges` into manifest-tracked files, and the `revoke all on all …` migration sorting before the baseline is deleted (measured: `db push --linked --dry-run` refuses an out-of-order migration).*
 *2026-11-03: Amended after #4's review - "`anon` reaches the three Definer set calls" was never true of the shipped grants, and "grants select" said nothing about writes: the baseline carried no DML grant at all, and the verbs live on the tables now (ADR-0023 amendment 6).*
 
+### Setup and deploy
+
+**Setup**:
+The one-time human configuration the repo cannot reproduce: the GitHub OAuth App, the hosted project's provider credentials, Site URL and Redirect URLs, the box's deploy user, unit and nginx block, the deploy secrets. Setup changes **configuration only** — never product behaviour, never a schema. It is human-only by definition, so no automation performs it: an agent with the hosted project's login is an operator with production rights (ADR-0028).
+_Avoid_: provisioning, onboarding, environment setup, ops task
+
+**Setup wizard**:
+The operator-facing artifact that performs Setup: it opens the right page, prints the exact strings to type, captures the values copied back, and verifies by read-only probe. It mints keys and secrets, and provisions **nothing** — nginx, certbot, Node and pnpm are probed, never installed, and a failed probe aborts. It refuses `db reset`, `db push` and `config push`, reads no app code, and never handles the OAuth Client secret, which is typed by hand into Studio. Scripts under `scripts/`, with a skill naming when to run one (ADR-0028).
+_Avoid_: bootstrap script, install script, CI job, runbook (the runbook is the record; the wizard is the act)
+
+**Recorded run**:
+The block of facts a completed Setup leaves in `docs/runbooks/supabase-vps-setup.md`: origin, callback, redirect strings, Client ID, the service and env-file paths, the release root, the secret and variable names, the first green deploy. The runbook records them; a run that writes none leaves its ticket open, because the box's shape is a fact no code review sees.
+_Avoid_: setup notes, checklist, incident log
+
 ## UI Vocabulary
 
 **Drawer**:

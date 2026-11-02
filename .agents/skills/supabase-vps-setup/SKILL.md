@@ -41,6 +41,7 @@ Unverified by design and listed on #9: RS256 vs HS256, session/token expiry, key
 rotation, backups, the Realtime WS path through nginx.
 
 - `docs/runbooks/supabase-vps-setup.md` — the strings, the paths, the CI contract
-- `docs/agents/advisors.md`, `docs/adr/0006-app-on-vps-database-on-hosted-supabase.md`,
-  `docs/adr/0008-e2e-tests-sign-in-with-local-email.md`
+- `docs/adr/0028-setup-is-a-wizard-that-mints-configuration-and-provisions-nothing.md`,
+  `docs/adr/0006-app-on-vps-database-on-hosted-supabase.md`,
+  `docs/adr/0008-e2e-tests-sign-in-with-local-email.md`, `docs/agents/advisors.md`
 - `supabase/config.toml` — `[db.migrations] schema_paths = []` (never add a path)
