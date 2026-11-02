@@ -137,6 +137,7 @@ _Avoid_: Visit, geofence event, check-in, Arrival banner, "Pick it"
 **Standing Location**:
 The Location of a Member's most recent **Arrival**, held on their device for the visit. It names the **Location** a **Buy** records; a hand **Pick** clears it, and a Buy with no Standing Location records none. It carries no name of its own, and v1 shows it nowhere.
 _Avoid_: Current location, my location, where I am, geotag, last location, Active Location (only an Arrival names it)
+*2026-11-01: Amended by #32, recorded in ADR-0027 — a Standing Location a co-Member's cascade erased is not a report: the **Store picker** opens and the value clears, because a Buy that names no Location is legal (ADR-0017's "no re-Pick rule" is a picker, not a copy).*
 
 **Geofence**:
 The radius around a Location's coordinates within which a Member counts as Inside it. Default 150 m, editable per Location by any Member — one shared judgement, not one per Member.
@@ -261,9 +262,17 @@ The one Realtime channel a signed-in tab joins — topic **`household:{household
 _Avoid_: socket, websocket, live list, per-List channel, sync channel, real-time layer
 
 **Write's report**:
-The copy v1 gives for a write that failed, and ADR-0016's report of a Buy that claimed nothing (naming the co-Member and their Store, drawn from that Member's own reply) — the app's **only** announcement, mounted **top-center**. Co-Members receive no announcement of any kind (ADR-0022, ADR-0025; the strings are [#32](https://github.com/justintaddei/kinetic-lists/issues/32)).
-_Avoid_: co-Member toast, claim toast, notification, sync banner, offline indicator, toast stack
+The copy v1 gives for a write that failed — the actor's own report, and v1's **only announcement**, carried by the shell's two Toaster mounts. Its shape (ADR-0027): `the act didn't land · the state it fell back to` (`Check didn't land · Milk is back in Needed`), the act naming the tap and the state clause naming what the rows are now, joined by `·`. A **refusal the database answered** speaks plainly instead (`Nothing is In Basket at Walmart`), the server's own sentence is copy for a failure with no code map so none is ever silent, and a row a co-Member erased mid-flight says the thing is gone. **Every failed write reports**: the flip-back is the line's visible half, never its own line. **A name clash is never a report** — the name-join sheet, the Item sheet's `Milk already exists` and the Store picker are the answers (ADR-0018 generalized). Sonner's defaults, with no timing set at a call site; dismissible. Co-Members receive no announcement of any kind (ADR-0022, ADR-0025).
+_Avoid_: co-Member toast, claim toast, notification, sync banner, offline indicator, offline banner, toast stack, "Something went wrong", Buy toast (the shell's copy names the report; tests assert copy, never a toast)
+
+**Buy's report**:
+A **Buy**'s answer in text, and the bottom-center mount's only client (ADR-0027): `Bought 5 at Walmart · Midtown` when Buy Bought, `Bought 5 at Walmart · Alex Bought Milk and Eggs at Big Y` when a co-Member claimed some lines (ADR-0016's report that writes nothing), `Nothing is In Basket at Walmart` when Buy found no line at that Store, and `Buy didn't land · Nothing was Bought` when the request died short of the RPC. It never speaks on the other mount, and it always names the Store it Buys (ADR-0026).
+_Avoid_: Buy toast, receipt, last-Bought line, "Buy failed"
+
+**Standing at**:
+How a report names a **Standing Location**: the **Location** written after the **Store**'s name in ADR-0015's `·` form — `Bought 5 at Walmart · Midtown` (ADR-0026's Buy verb), and `Walmart Midtown` in the Kinetic View's standing line. The label is **copy, never data**: a Location has no name in v1's schema (ADR-0017, ADR-0021), so a copy line names a Standing Location in words the app writes, and a **hand-Picked Store's Buy names none** — `Bought 5 at Walmart`.
+_Avoid_: Location name, `(Home Main)`, place name, address, Location label field
 
 **Online act**:
-v1's promise that every affordance — **Check**, **Buy**, add, edit, **Tag**, **Pick** — is one live call whose failure is its own report. No queue, no replay, no merge rules, no offline affordance, no connection language (ADR-0025).
+v1's promise that every affordance — **Check**, **Buy**, add, edit, **Tag**, **Pick** — is one live call whose failure is its own report. No queue, no replay, no merge rules, no offline affordance, no connection language. Its copy rule (ADR-0027): a failure names its act and the state it fell back to — `Check didn't land · Milk is back in Needed` — and a line naming a cause the app cannot know ("offline", "network", "unreachable") is connection language.
 _Avoid_: offline mode, queued edit, pending write, sync UI, reconnecting, draft
