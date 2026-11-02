@@ -41,7 +41,7 @@ ADR-0015), so a first-time Household's Capture'd Names carry no Tag, are **invis
 Kinetic View**, and the gate copy counts them accurately as `K with no Tag at this Store`. The gate is
 not broken: it names rows no screen will show. **The seeding answer is chosen against that trap** —
 sign-up seeds the Standing Set with Names, and the Kinetic View's emptiness and gate copy must make
-the untagged Needs legible, not hide them ([#36](https://github.com/justintaddei/kinetic-lists/issues/36)).
+the untagged Needs legible, not hide them — the map's remaining **seeding** fog, deliberately not a ticket yet.
 
 Two things the prototype confirmed, because they were decisions in search of a screen: **three doors
 to one Mint sheet** (the Kinetic View's emptiness, the Store picker's sticky entry, the Buy gate's
@@ -52,10 +52,10 @@ carries the Arrival**: `Buy at Walmart · Midtown`, `Buy at Walmart` when a Stor
 at the verb instead of in a sheet a Member must answer (ADR-0021's rule that an **Arrival** names the
 Location a Buy records).
 
-**Consequences.** [#12](https://github.com/justintaddei/kinetic-lists/issues/12) is layout and
-choreography on top of this shape (430px fit, the standing line, the live move), not a grouping
-competition; [#30](https://github.com/justintaddei/kinetic-lists/issues/30)'s live layer is what makes
-the screen Kinetic; [#36](https://github.com/justintaddei/kinetic-lists/issues/36)'s seeding is
+**Consequences.** The Kinetic View's **layout card** — not minted, and it should mint once
+[#30](https://github.com/justintaddei/kinetic-lists/issues/30)'s live layer is in place — is layout and choreography on top of
+this shape (430px fit, the standing line, the live move), not a grouping competition; [#30](https://github.com/justintaddei/kinetic-lists/issues/30)'s live layer is what makes
+the screen Kinetic; the **seeding** answer — the map's fog, not a ticket — is
 measured by the invisible-Needs trap; [#32](https://github.com/justintaddei/kinetic-lists/issues/32)'s
 copy strings gain the standing line. A ticket that plans a **Store-shelf Kinetic View**, **Category
 headings as the grouping**, a **live affordance in the grouping**, an **Arrival with no report**, a
