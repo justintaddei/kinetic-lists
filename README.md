@@ -88,22 +88,28 @@ Composables: `useSupabaseClient()`, `useSupabaseUser()` (JWT claims),
 `useSupabaseSession()`. In server routes: `serverSupabaseUser(event)` from
 `#supabase/server`.
 
-### One-time dashboard setup
+### One-time Setup: run the wizard
 
-1. In GitHub → Settings → Developer settings → OAuth Apps → New OAuth App:
-   - Homepage URL: `http://localhost:3000`
-   - Authorization callback URL: `https://<project-ref>.supabase.co/auth/v1/callback`
-     (copy it from Supabase → Authentication → Sign In / Providers → GitHub)
-2. In Supabase → Authentication → Sign In / Providers → GitHub: paste the GitHub client
-   ID and client secret, and enable the provider.
-3. In Supabase → Authentication → URL Configuration:
-   - Site URL: `http://localhost:3000` while developing, your production URL otherwise
-   - Redirect URLs: add `http://localhost:3000/confirm` and `https://<your-domain>/confirm`
-     as exact entries — a single `*` will not match the `confirm` path. Redirects that do
-     not match an entry silently fall back to the Site URL.
+Setup is human-only and none of it is reproducible from the repo (ADR-0006: app on a
+VPS, database on hosted Supabase). Run the wizard, and read the runbook before its
+first stage:
 
-Env vars live in `.env` (`NUXT_PUBLIC_SUPABASE_URL`, `NUXT_PUBLIC_SUPABASE_KEY`). Auth
-cookies default to `Secure`, which browsers accept on `localhost`; set
+```bash
+scripts/setup-supabase-vps.sh     # walk: OAuth App → hosted auth config → VPS → deploy secrets
+```
+
+It opens the browser at the right page, prints the exact strings to type, captures the
+values you copy back, and verifies with read-only probes. It never provisions, never
+runs `db reset`/`db push`/`config push`, and never handles the OAuth Client Secret —
+that is pasted by hand into Studio, because the secret is a "sign in as this user"
+primitive and GoTrue exchanges the code server-side.
+
+- `docs/runbooks/supabase-vps-setup.md` — the strings, paths, and the CI contract
+- `.agents/skills/supabase-vps-setup` — when to run it and what it refuses
+
+Env vars live in `.env` (`NUXT_PUBLIC_SUPABASE_URL`,
+`NUXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`; the wizard adds the local dev sign-in keys).
+Auth cookies default to `Secure`, which browsers accept on `localhost`; set
 `supabase.cookieOptions.secure: false` if you test through a LAN IP over http.
 
 ## Supabase database (declarative schemas)
