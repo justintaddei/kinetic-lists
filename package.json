@@ -1,0 +1,49 @@
+{
+  "name": "kinetic-lists",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "lint": "eslint .",
+    "typecheck": "nuxt typecheck",
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:restart": "supabase stop --yes && supabase start --yes",
+    "db:reset": "supabase db reset",
+    "db:upgrade": "supabase start",
+    "db:migration:up": "supabase migration up",
+    "db:new": "supabase migration new",
+    "db:shell": "supabase db shell",
+    "schema:sync": "supabase db schema declarative sync --no-apply",
+    "schema:generate": "supabase db schema declarative generate",
+    "schema:pull": "supabase db pull --declarative --remote",
+    "db:types": "mkdir -p app/types && supabase gen types typescript --local --schema public > app/types/database.types.ts && oxfmt app/types/database.types.ts",
+    "db:link": "supabase link",
+    "db:push": "supabase db push --remote"
+  },
+  "dependencies": {
+    "@iconify-json/lucide": "^1.2.147",
+    "@iconify-json/simple-icons": "^1.2.100",
+    "@nuxt/image": "2.2.1",
+    "@nuxt/ui": "^4.12.0",
+    "@nuxtjs/supabase": "2.1.0",
+    "@vueuse/nuxt": "15.0.0",
+    "nuxt": "^4.6.3",
+    "tailwindcss": "^4.3.3",
+    "vue": "^3.5.44"
+  },
+  "devDependencies": {
+    "@nuxt/eslint": "^1.17.0",
+    "@types/node": "^26.6.6",
+    "eslint": "^10.13.0",
+    "eslint-plugin-better-tailwindcss": "^4.10.0",
+    "oxfmt": "^0.75.0",
+    "supabase": "3.0.0",
+    "typescript": "^6.0.3",
+    "vue-tsc": "^3.3.13"
+  },
+  "packageManager": "pnpm@12.15.0"
+}
