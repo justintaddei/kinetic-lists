@@ -1,0 +1,11 @@
+{
+  "cSpell.words": ["plpgsql"],
+  "eslint.rules.customizations": [
+    { "rule": "@stylistic/arrow-parens", "severity": "off" },
+    {
+      "rule": "vue/singleline-html-element-content-newline",
+      "severity": "off"
+    },
+    { "rule": "vue/max-attributes-per-line", "severity": "off" }
+  ]
+}

@@ -222,6 +222,9 @@ importers:
       '@nuxt/eslint':
         specifier: ^1.17.0
         version: 1.17.0(@nuxt/schema@4.6.3)(@typescript-eslint/utils@8.66.0(eslint@10.13.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(@vue/compiler-sfc@3.5.44)(confbox@0.3.1)(dotenv@17.4.2)(esbuild@0.28.2)(eslint@10.13.0(jiti@2.7.0)(supports-color@10.2.2))(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.3)(oxc-parser@0.140.0)(rolldown@1.2.15)(rollup@4.65.1)(srvx@1.0.5)(supports-color@10.2.2)(typescript@6.0.3)(unplugin@3.4.0(esbuild@0.28.2)(rolldown@1.2.15)(rollup@4.65.1)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.47.1)(yaml@2.9.0)))(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.47.1)(yaml@2.9.0))
+      '@postgres-language-server/cli':
+        specifier: 0.28.2
+        version: 0.28.2
       '@types/node':
         specifier: ^26.6.6
         version: 26.6.6
@@ -1754,6 +1757,58 @@ packages:
 
   '@poppinss/exception@1.2.3':
     resolution: {integrity: sha512-dCED+QRChTVatE9ibtoaxc+WkdzOSjYTKi/+uacHWIsfodVfpsueo3+DKpgU5Px8qXjgmXkSvhXvSCz3fnP9lw==}
+
+  '@postgres-language-server/cli-aarch64-apple-darwin@0.28.2':
+    resolution: {integrity: sha512-ZVoy4C3khdCVyI9QkB1mste2y3aZffP7e40YSRcuTrQvUJihu9poF9EHU7Bba1aysZ+Rm2wp2ko6x0ejWtCuQg==}
+    engines: {node: '>=20'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@postgres-language-server/cli-aarch64-linux-gnu@0.28.2':
+    resolution: {integrity: sha512-T3+7bMske1/qGCKAnWAgGA8ynsEori9KBL2ikhE6YcHjTjMPRGjEFoEeRAr9wegoA7C6unotfWTwmu92R8OC+Q==}
+    engines: {node: '>=20'}
+    cpu: [arm64]
+    os: [linux]
+    libc: glibc
+
+  '@postgres-language-server/cli-aarch64-windows-msvc@0.28.2':
+    resolution: {integrity: sha512-UpDKzasc3/V3ZIwfc+7y9Dy+wHUl7DY67BmqVGaOBfO2girTwzAo882F2wXvjSB3PiB+7VksaqVOhyy1VDQF3g==}
+    engines: {node: '>=20'}
+    cpu: [arm64]
+    os: [win32]
+    libc: msvc
+
+  '@postgres-language-server/cli-x86_64-apple-darwin@0.28.2':
+    resolution: {integrity: sha512-DXm2d2N57q9VhkS8AX9w5yh5ZTkfDLXqM1jHn0Xh7JFCCVoJvtEiXmrKgeJgIeITpxt/sTwHAZc5FFl0ajOz2Q==}
+    engines: {node: '>=20'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@postgres-language-server/cli-x86_64-linux-gnu@0.28.2':
+    resolution: {integrity: sha512-NFsWt9NAMaYNnzXXjJjRZU5qftuzt5k9ip18BfViCt202nWpIZHFsJkoyUXF3omQm2TBVRvb9XImuOwVzYNrhA==}
+    engines: {node: '>=20'}
+    cpu: [x64]
+    os: [linux]
+    libc: glibc
+
+  '@postgres-language-server/cli-x86_64-linux-musl@0.28.2':
+    resolution: {integrity: sha512-N9Q1XD8mxN7cXrEZyf3UHamO2dNjr7zLLopT1TfRjypsQUzoaxa9HmT4cDnAHyXoZJ+6e0nN7A7aDO4kvuJp9Q==}
+    engines: {node: '>=20'}
+    cpu: [x64]
+    os: [linux]
+    libc: musl
+
+  '@postgres-language-server/cli-x86_64-windows-msvc@0.28.2':
+    resolution: {integrity: sha512-nTd0i87T1WNA6DeMvLwMw5DzHCDIM6vhMebHsKPIx1I/Es11/HdpJlRfpWs3GXtEhxcNGyBW6E0sEHbhsSoakQ==}
+    engines: {node: '>=20'}
+    cpu: [x64]
+    os: [win32]
+    libc: msvc
+
+  '@postgres-language-server/cli@0.28.2':
+    resolution: {integrity: sha512-s1yXOsPv14Tpv/1hbndsSJulVyUnOtlLz4Jc42tnmg9Hmlcct4Fc7EtYQ69Z8Tglgm3FYvXRpdveW3GDzEOpxg==}
+    engines: {node: '>=20'}
+    hasBin: true
 
   '@rolldown/binding-android-arm-eabi@1.2.15':
     resolution: {integrity: sha512-aLcgK9gIJ3YRvrrtfSBbRa27F5WrpiTaPulnFpsHPxpUHgFlSgnU4854MHwoRGEBhfRJDWCS2WQ7lIjskE9Olw==}
@@ -7669,6 +7724,37 @@ snapshots:
       supports-color: 10.2.2
 
   '@poppinss/exception@1.2.3': {}
+
+  '@postgres-language-server/cli-aarch64-apple-darwin@0.28.2':
+    optional: true
+
+  '@postgres-language-server/cli-aarch64-linux-gnu@0.28.2':
+    optional: true
+
+  '@postgres-language-server/cli-aarch64-windows-msvc@0.28.2':
+    optional: true
+
+  '@postgres-language-server/cli-x86_64-apple-darwin@0.28.2':
+    optional: true
+
+  '@postgres-language-server/cli-x86_64-linux-gnu@0.28.2':
+    optional: true
+
+  '@postgres-language-server/cli-x86_64-linux-musl@0.28.2':
+    optional: true
+
+  '@postgres-language-server/cli-x86_64-windows-msvc@0.28.2':
+    optional: true
+
+  '@postgres-language-server/cli@0.28.2':
+    optionalDependencies:
+      '@postgres-language-server/cli-aarch64-apple-darwin': 0.28.2
+      '@postgres-language-server/cli-aarch64-linux-gnu': 0.28.2
+      '@postgres-language-server/cli-aarch64-windows-msvc': 0.28.2
+      '@postgres-language-server/cli-x86_64-apple-darwin': 0.28.2
+      '@postgres-language-server/cli-x86_64-linux-gnu': 0.28.2
+      '@postgres-language-server/cli-x86_64-linux-musl': 0.28.2
+      '@postgres-language-server/cli-x86_64-windows-msvc': 0.28.2
 
   '@rolldown/binding-android-arm-eabi@1.2.15':
     optional: true

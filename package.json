@@ -20,7 +20,10 @@
     "schema:sync": "supabase db schema declarative sync --no-apply",
     "schema:generate": "supabase db schema declarative generate",
     "schema:pull": "supabase db pull --declarative --remote",
-    "db:types": "mkdir -p app/types && supabase gen types typescript --local --schema public > app/types/database.types.ts && oxfmt app/types/database.types.ts",
+    "schema:check": "postgres-language-server check supabase/schemas supabase/migrations",
+    "schema:fmt": "postgres-language-server format supabase/schemas supabase/migrations",
+    "db:lint": "postgres-language-server dblint",
+    "db:types": "supabase gen types typescript --schema public > app/types/database.types.ts && oxfmt app/types/database.types.ts",
     "db:link": "supabase link",
     "db:push": "supabase db push --remote"
   },
@@ -37,6 +40,7 @@
   },
   "devDependencies": {
     "@nuxt/eslint": "^1.17.0",
+    "@postgres-language-server/cli": "0.28.2",
     "@types/node": "^26.6.6",
     "eslint": "^10.13.0",
     "eslint-plugin-better-tailwindcss": "^4.10.0",

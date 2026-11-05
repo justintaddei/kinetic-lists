@@ -1,0 +1,70 @@
+{
+  // Postgres Language Server — editor + CLI config for this project.
+  // https://pg-language-server.com/latest/configuration/
+  "$schema": "https://pg-language-server.com/latest/schema.json",
+
+  // Skip whatever .gitignore already excludes (node_modules, .nuxt, ...).
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true,
+    "defaultBranch": "master"
+  },
+  "files": {
+    "ignore": [".nuxt", ".output", ".data"]
+  },
+
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true
+    }
+  },
+
+  // Migration-only rules (most of `safety`/`destructive`: lock windows, rewrites,
+  // addingForeignKeyConstraint, multipleAlterTable, ...) run ONLY inside migrationsDir.
+  // Declarative files in supabase/schemas are a source template replayed by pg-delta,
+  // so they must not be judged as deploy scripts.
+  // `after` = the newest migration already applied everywhere; bump it when a migration
+  // ships so history stays quiet and only new migrations get the lock-window rules.
+  "migrations": {
+    "migrationsDir": "supabase/migrations",
+    "after": 20261104010304
+  },
+
+  // Exclusion list for findings that are already shipped — keeps existing
+  // objects quiet without editing them.
+  "splinter": {
+    "enabled": true
+  },
+
+  // Live connection to the LOCAL Supabase stack only. Ports are shifted to the
+  // 553xx range by supabase/config.toml (NOT the default 54322).
+  // Type checking, completion and hover need `pnpm db:start`.
+  // Never point this at the hosted project: pgls runs PREPARE statements against it.
+  "db": {
+    "connectionString": "postgres://postgres:postgres@127.0.0.1:55322/postgres?sslmode=disable",
+    "connTimeoutSecs": 10,
+    "allowStatementExecutionsAgainst": ["127.0.0.1/*", "localhost/*"]
+  },
+
+  // Typecheck group rules + the legacy EXPLAIN check.
+  "typecheck": {
+    "enabled": true
+  },
+  // Analysed by the plpgsql_check extension in the local DB (function bodies only).
+  "plpgsqlCheck": {
+    "enabled": true
+  },
+
+  // We own SQL formatting: lowercase keywords, also for pg-delta generated files.
+  "format": {
+    "enabled": true,
+    "keywordCase": "lower"
+  },
+
+  // Lints the LIVE database (needs `pnpm db:start` + `postgres-language-server dblint`).
+  "pglinter": {
+    "enabled": false
+  }
+}

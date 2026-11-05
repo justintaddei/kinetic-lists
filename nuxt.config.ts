@@ -9,7 +9,7 @@ export default defineNuxtConfig({
   ],
 
   devtools: {
-    enabled: true
+    enabled: false
   },
 
   css: ['~/assets/css/main.css'],
@@ -36,7 +36,7 @@ export default defineNuxtConfig({
       login: '/login',
       // Must also appear in auth.additional_redirect_urls (supabase/config.toml).
       callback: '/auth/callback',
-      include: ['/todos', '/todos/*'],
+      exclude: ['/login'],
       // Remember the attempted URL in a cookie so the callback page can send the
       // user back to it. (Requires `cookiePrefix`; the cookie name is
       // `${cookiePrefix}-redirect-path`.)
